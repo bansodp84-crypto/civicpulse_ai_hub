@@ -1,0 +1,1523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CivicPulse AI Hub | Smart Village Community Platform</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{--ink:#122b2a;--muted:#647774;--teal:#087f78;--teal2:#0aa596;--mint:#e9f7f3;--coral:#f0785b;--paper:#f3f7f5;--line:#e2ebe7;--navy:#102b2a}
+    *{box-sizing:border-box}
+    body{font-family:'DM Sans',sans-serif!important;background:radial-gradient(circle at 8% 0%,#e1f2ed 0,transparent 27%),var(--paper)!important;color:var(--ink)!important}
+    .font-mono-code{font-family:'Space Mono',monospace}
+    header{background:linear-gradient(115deg,#0d2927,#124b45 70%,#087f78)!important;padding:18px 24px!important;box-shadow:0 12px 35px #0d29271c!important;position:relative;z-index:5}
+    header .max-w-7xl{max-width:1500px!important}
+    header h1{font-size:22px!important;letter-spacing:-.7px}
+    header p{color:#b9d3cd!important}
+    header .rounded-xl{border-radius:14px!important}
+    main{max-width:1500px!important;gap:24px!important;padding-top:28px!important;padding-bottom:44px!important;align-items:start}
+    aside{position:sticky;top:18px}
+    aside>div,.lg\:col-span-8>div{border-radius:22px!important;border:1px solid var(--line)!important;box-shadow:0 8px 30px #183b3210!important}
+    aside>div{padding:20px!important}
+    .tab-btn{border-radius:15px!important;padding:13px!important;border-width:1px!important;background:#fff!important}
+    .tab-btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px #183b3210}
+    .tab-btn[id="tab-map"]{border:1.5px solid #0b9186!important;background:linear-gradient(100deg,#e8f7f2,#fff)!important;box-shadow:inset 3px 0 #0b9186}
+    .tab-btn .w-10{border-radius:12px!important}
+    .tab-btn div div:first-child{font-size:14px}
+    aside .bg-\[\#0F2A26\]{background:linear-gradient(145deg,#102b2a,#174b43)!important}
+    button{transition:all .2s ease!important}
+    button:active{transform:scale(.98)}
+    button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid #0aa59655!important;outline-offset:2px}
+    input,textarea,select{border-radius:12px!important;border-color:#d8e4df!important;background-color:#fff}
+    input:focus,textarea:focus,select:focus{box-shadow:0 0 0 4px #0aa59618!important}
+    #panel-map,#panel-health,#panel-edu,#panel-climate{border-radius:24px!important;padding:25px!important;box-shadow:0 12px 40px #183b3210!important}
+    #panel-map h2,#panel-health h2,#panel-edu h2,#panel-climate h2{letter-spacing:-.8px;line-height:1.2}
+    #map-wrapper{height:440px!important;border:1px solid #d9e7df!important;border-radius:20px!important;box-shadow:inset 0 0 0 1px #fff}
+    #resource-inspector{border-radius:18px!important}
+    #resource-directory>div,#resource-directory>button{border-radius:14px!important}
+    #triage-result,#bmi-result-box,#tutor-output{border-radius:18px!important}
+    #toast{border-radius:14px!important;box-shadow:0 18px 45px #102b2a35!important}
+    .pulse-dot{animation:pulse 2s infinite}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+    .water-ripple{animation:ripple 3s infinite ease-out;transform-box:fill-box;transform-origin:center}
+    @keyframes ripple{0%{transform:scale(.8);opacity:.75}100%{transform:scale(2.1);opacity:0}}
+    /* Keep the SVG translate() transform intact: CSS transform on the group
+       overrides its SVG position and makes pins jump/shake on hover. */
+    .map-pin{cursor:pointer;transition:filter .16s ease;}
+    .map-pin:hover,.map-pin.active-pin{filter:drop-shadow(0 2px 4px #14232155)}
+    .map-pin:focus-visible{outline:none;filter:drop-shadow(0 0 4px #0D6E6E)}
+    /* cleaner module headings and dashboard rhythm */
+    .border-b.border-slate-100{border-color:#e7efeb!important}
+    .bg-\[\#EFF5F4\]{background:#eff8f5!important}
+    .text-\[\#0D6E6E\]{color:#087f78!important}
+    .bg-\[\#0D6E6E\]{background:#087f78!important}
+    .bg-\[\#142321\]{background:#122f2c!important}
+    .bg-\[\#E07A5F\]{background:#ed795c!important}
+    .text-\[\#142321\]{color:#122b2a!important}
+    .shadow-sm{box-shadow:0 8px 28px #183b320c!important}
+    @media(max-width:1023px){aside{position:static}main{padding-top:18px!important;gap:18px!important}}
+    .module-nav{max-height:62vh;overflow:auto;scrollbar-width:thin}
+    .module-panel{border-radius:24px!important;padding:25px!important;box-shadow:0 12px 40px #183b3210!important}
+    .metric-card{background:linear-gradient(145deg,#f2faf7,#fff);border:1px solid #dcebe4;border-radius:17px;padding:16px}
+    .action-btn{background:#087f78;color:white;border-radius:12px;padding:10px 15px;font-weight:700;font-size:13px}
+    .action-btn:hover{background:#066b65}
+    .soft-btn{background:#eff8f5;color:#087f78;border:1px solid #cfe7dd;border-radius:12px;padding:9px 13px;font-weight:700;font-size:13px}
+    .status-pill{display:inline-flex;align-items:center;border-radius:999px;padding:4px 9px;font-size:11px;font-weight:800}
+    .module-panel input,.module-panel select,.module-panel textarea{width:100%;padding:10px 12px;border:1px solid #d8e4df;border-radius:11px;background:#fff;font-size:14px}
+    .module-panel label{display:block;font-size:12px;font-weight:700;color:#47615a;margin-bottom:5px}
+    @media(max-width:1023px){.module-nav{max-height:none}}
+    @media(max-width:640px){header{padding:14px!important}header h1{font-size:18px!important}main{padding:14px!important}#panel-map,#panel-health,#panel-edu,#panel-climate,.module-panel{padding:17px!important;border-radius:18px!important}#map-wrapper{height:340px!important}aside>div{padding:16px!important}}
+  </style>
+
+  <meta name="description" content="CivicPulse AI Hub community services demo for Wanadongri, Nagpur: citizen reports, local resources, health, learning, agriculture and public information.">
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- Top Navigation & Edge Hardware Telemetry Bar -->
+  <header class="bg-[#0F2A26] text-[#FAF9F6] px-4 sm:px-6 py-4 shadow-md">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-[#0D6E6E] flex items-center justify-center text-white font-bold text-xl shrink-0">
+          <i class="fa-solid fa-microchip"></i>
+        </div>
+        <div>
+          <h1 class="text-lg sm:text-xl font-extrabold tracking-tight flex flex-wrap items-center gap-2">
+            CivicPulse AI Hub
+            <span class="text-xs font-mono-code bg-[#E07A5F] text-white px-2 py-0.5 rounded">WANADONGRI NODE #04</span>
+          </h1>
+          <p class="text-xs text-slate-300 font-mono-code">21.0942° N, 78.9938° E • Hingna Rd, Nagpur, MH • Raspberry Pi 5</p>
+        </div>
+      </div>
+
+      <!-- Simulated Hardware & Connectivity Controls -->
+      <div class="flex flex-wrap items-center gap-2.5 sm:gap-3 text-sm">
+        <div class="flex items-center gap-2 bg-[#163832] px-3 py-1.5 rounded-lg border border-teal-800">
+          <i class="fa-solid fa-solar-panel text-amber-400"></i>
+          <span class="font-mono-code text-xs">Solar: <strong id="battery-level">96%</strong></span>
+        </div>
+
+        <button id="network-toggle" onclick="toggleNetwork()" class="flex items-center gap-2 px-3 py-1.5 rounded-lg font-mono-code text-xs font-bold transition cursor-pointer bg-amber-500/20 text-amber-300 border border-amber-500/40">
+          <span id="network-dot" class="w-2.5 h-2.5 rounded-full bg-amber-400 pulse-dot"></span>
+          <span id="network-label">OFFLINE (EDGE MODE)</span>
+        </button>
+
+        <button onclick="syncNow()" id="sync-btn" class="flex items-center gap-2 bg-[#0D6E6E] hover:bg-teal-700 text-white px-3 py-1.5 rounded-lg font-mono-code text-xs font-bold transition cursor-pointer">
+          <i class="fa-solid fa-rotate" id="sync-icon"></i>
+          <span>Mesh Sync (<span id="queue-count">3</span>)</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+
+  <section class="max-w-7xl w-full mx-auto px-4 sm:px-6 pt-7">
+    <div class="rounded-3xl overflow-hidden relative p-6 sm:p-8 text-white" style="background:linear-gradient(112deg,#103c36 0%,#087f78 72%,#10a895 100%);box-shadow:0 18px 45px #0b625322">
+      <div class="absolute -right-12 -top-24 w-72 h-72 rounded-full border border-white/10"></div>
+      <div class="absolute right-16 -bottom-32 w-72 h-72 rounded-full border border-white/10"></div>
+      <div class="relative z-10 max-w-3xl">
+        <div class="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-bold tracking-wide mb-3" style="background:#ffffff1c;color:#d9fff3"><span class="w-2 h-2 rounded-full bg-emerald-300 pulse-dot"></span> COMMUNITY INTELLIGENCE • WANADONGRI</div>
+        <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight mb-2">Smarter services. Stronger communities.</h2>
+        <p class="text-sm sm:text-base leading-relaxed" style="color:#d5eae5">One connected hub for local resources, rural health support, learning and climate insights — designed to keep working even when the internet doesn't.</p>
+      </div>
+      <div class="relative z-10 grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6">
+        <div class="rounded-2xl p-3" style="background:#ffffff16;border:1px solid #ffffff20"><div class="text-xs" style="color:#c4e5dc">Mapped resources</div><div class="text-2xl font-extrabold mt-1">10</div></div>
+        <div class="rounded-2xl p-3" style="background:#ffffff16;border:1px solid #ffffff20"><div class="text-xs" style="color:#c4e5dc">Service modules</div><div class="text-2xl font-extrabold mt-1">04</div></div>
+        <div class="rounded-2xl p-3" style="background:#ffffff16;border:1px solid #ffffff20"><div class="text-xs" style="color:#c4e5dc">Farm sensor nodes</div><div class="text-2xl font-extrabold mt-1">04</div></div>
+        <div class="rounded-2xl p-3" style="background:#ffffff16;border:1px solid #ffffff20"><div class="text-xs" style="color:#c4e5dc">Local-first mode</div><div class="text-2xl font-extrabold mt-1">24/7</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Workspace -->
+  <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+    <!-- Left Sidebar: Module Selector & Local Dialect Voice Input -->
+    <aside class="lg:col-span-4 flex flex-col gap-5">
+      <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200">
+        <p class="text-xs font-mono-code uppercase tracking-wider text-[#0D6E6E] font-bold mb-3">1. Select Wanadongri Service</p>
+        <div class="flex flex-col gap-2.5">
+          <!-- NEW TAB: Wanadongri Local Water & Resource Map -->
+          <button onclick="switchTab('map')" id="tab-map" class="tab-btn w-full text-left p-3.5 rounded-xl border-2 border-[#0D6E6E] bg-[#EFF5F4] flex items-center gap-3.5 transition cursor-pointer">
+            <div class="w-10 h-10 rounded-lg bg-[#0D6E6E] text-white flex items-center justify-center text-lg shrink-0">
+              <i class="fa-solid fa-map-location-dot"></i>
+            </div>
+            <div>
+              <div class="font-bold text-[#142321] flex items-center gap-2">
+                Wanadongri Resource Map
+                <span class="text-[10px] font-mono-code bg-[#0D6E6E] text-white px-1.5 py-0.5 rounded">GIS</span>
+              </div>
+              <div class="text-xs text-slate-600">Water tanks, borewells, clinic & solar grid</div>
+            </div>
+          </button>
+
+          <button onclick="switchTab('health')" id="tab-health" class="tab-btn w-full text-left p-3.5 rounded-xl border border-slate-200 hover:bg-slate-50 flex items-center gap-3.5 transition cursor-pointer">
+            <div class="w-10 h-10 rounded-lg bg-[#E07A5F] text-white flex items-center justify-center text-lg shrink-0">
+              <i class="fa-solid fa-stethoscope"></i>
+            </div>
+            <div>
+              <div class="font-bold text-[#142321]">Rural Health Triage</div>
+              <div class="text-xs text-slate-600">Offline symptom analysis & ASHA protocol</div>
+            </div>
+          </button>
+
+          <button onclick="switchTab('edu')" id="tab-edu" class="tab-btn w-full text-left p-3.5 rounded-xl border border-slate-200 hover:bg-slate-50 flex items-center gap-3.5 transition cursor-pointer">
+            <div class="w-10 h-10 rounded-lg bg-amber-600 text-white flex items-center justify-center text-lg shrink-0">
+              <i class="fa-solid fa-book-open-reader"></i>
+            </div>
+            <div>
+              <div class="font-bold text-[#142321]">Dialect AI Tutor</div>
+              <div class="text-xs text-slate-600">Marathi/Hindi STEM & literacy lessons</div>
+            </div>
+          </button>
+
+          <button onclick="switchTab('climate')" id="tab-climate" class="tab-btn w-full text-left p-3.5 rounded-xl border border-slate-200 hover:bg-slate-50 flex items-center gap-3.5 transition cursor-pointer">
+            <div class="w-10 h-10 rounded-lg bg-[#142321] text-white flex items-center justify-center text-lg shrink-0">
+              <i class="fa-solid fa-seedling"></i>
+            </div>
+            <div>
+              <div class="font-bold text-[#142321]">LoRaWAN Climate & Crop</div>
+              <div class="text-xs text-slate-600">Vidarbha soil telemetry & irrigation alerts</div>
+            </div>
+          </button>
+          <button onclick="switchTab('citizen')" id="tab-citizen" class="tab-btn w-full text-left p-3.5 rounded-xl border border-slate-200 flex items-center gap-3.5 cursor-pointer"><span class="w-10 h-10 rounded-xl bg-orange-500 text-white flex items-center justify-center"><i class="fa-solid fa-triangle-exclamation"></i></span><span><b class="block text-sm">Citizen Complaints</b><small class="text-xs text-slate-500">Report and track local issues</small></span></button>
+          <button onclick="switchTab('schemes')" id="tab-schemes" class="tab-btn w-full text-left p-3.5 rounded-xl border border-slate-200 flex items-center gap-3.5 cursor-pointer"><span class="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center"><i class="fa-solid fa-landmark"></i></span><span><b class="block text-sm">Government Schemes</b><small class="text-xs text-slate-500">Eligibility and official portals</small></span></button>
+          <button onclick="switchTab('agriculture')" id="tab-agriculture" class="tab-btn w-full text-left p-3.5 rounded-xl border border-slate-200 flex items-center gap-3.5 cursor-pointer"><span class="w-10 h-10 rounded-xl bg-green-700 text-white flex items-center justify-center"><i class="fa-solid fa-tractor"></i></span><span><b class="block text-sm">Farmer Assistance</b><small class="text-xs text-slate-500">Crop, soil and market guidance</small></span></button>
+          <button onclick="switchTab('weather')" id="tab-weather" class="tab-btn w-full text-left p-3.5 rounded-xl border border-slate-200 flex items-center gap-3.5 cursor-pointer"><span class="w-10 h-10 rounded-xl bg-sky-600 text-white flex items-center justify-center"><i class="fa-solid fa-cloud-sun"></i></span><span><b class="block text-sm">Weather & Air Quality</b><small class="text-xs text-slate-500">Weather alerts and AQI</small></span></button>
+          <button onclick="switchTab('emergency')" id="tab-emergency" class="tab-btn w-full text-left p-3.5 rounded-xl border border-slate-200 flex items-center gap-3.5 cursor-pointer"><span class="w-10 h-10 rounded-xl bg-rose-600 text-white flex items-center justify-center"><i class="fa-solid fa-truck-medical"></i></span><span><b class="block text-sm">Emergency Help</b><small class="text-xs text-slate-500">Helplines and local contacts</small></span></button>
+          <button onclick="switchTab('assistant')" id="tab-assistant" class="tab-btn w-full text-left p-3.5 rounded-xl border border-slate-200 flex items-center gap-3.5 cursor-pointer"><span class="w-10 h-10 rounded-xl bg-violet-600 text-white flex items-center justify-center"><i class="fa-solid fa-robot"></i></span><span><b class="block text-sm">AI Community Assistant</b><small class="text-xs text-slate-500">Ask about village services</small></span></button>
+          <button onclick="switchTab('admin')" id="tab-admin" class="tab-btn w-full text-left p-3.5 rounded-xl border border-slate-200 flex items-center gap-3.5 cursor-pointer"><span class="w-10 h-10 rounded-xl bg-slate-800 text-white flex items-center justify-center"><i class="fa-solid fa-chart-line"></i></span><span><b class="block text-sm">Admin Dashboard</b><small class="text-xs text-slate-500">Community service analytics</small></span></button>
+          <button onclick="switchTab('account')" id="tab-account" class="tab-btn w-full text-left p-3.5 rounded-xl border border-slate-200 flex items-center gap-3.5 cursor-pointer"><span class="w-10 h-10 rounded-xl bg-teal-700 text-white flex items-center justify-center"><i class="fa-solid fa-user"></i></span><span><b class="block text-sm">Resident Account</b><small class="text-xs text-slate-500">Demo profile and preferences</small></span></button>
+        </div>
+      </div>
+
+      <!-- Simulated Whisper Edge Voice Assistant -->
+      <div class="bg-[#0F2A26] text-[#FAF9F6] rounded-2xl p-5 shadow-sm">
+        <div class="flex items-center justify-between mb-3">
+          <p class="text-xs font-mono-code uppercase tracking-wider text-[#E07A5F] font-bold">2. Local Voice Interface</p>
+          <select id="dialect-select" class="bg-[#163832] text-xs font-mono-code text-slate-200 border border-teal-800 rounded px-2 py-1">
+            <option value="mr">Marathi (Varhadi / Nagpur)</option>
+            <option value="hi">Hindi</option>
+            <option value="en">English</option>
+          </select>
+        </div>
+        <p class="text-xs text-slate-300 mb-3">Speak in Marathi or Hindi to locate clean water in Wanadongri, check BMI, or run health triage offline.</p>
+        <div class="grid grid-cols-3 gap-2">
+          <button onclick="simulateVoiceQuery('water')" id="voice-water-btn" class="py-2.5 px-2.5 rounded-xl bg-[#0D6E6E] hover:bg-teal-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition cursor-pointer">
+            <i class="fa-solid fa-droplet"></i>
+            <span>"पाणी कुठे?"</span>
+          </button>
+          <button onclick="simulateVoiceQuery('bmi')" id="voice-bmi-btn" class="py-2.5 px-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition cursor-pointer">
+            <i class="fa-solid fa-weight-scale"></i>
+            <span>"BMI तपासा"</span>
+          </button>
+          <button onclick="simulateVoiceQuery('health')" id="voice-health-btn" class="py-2.5 px-2.5 rounded-xl bg-[#E07A5F] hover:bg-[#d0694e] text-white font-bold text-xs flex items-center justify-center gap-1.5 transition cursor-pointer">
+            <i class="fa-solid fa-microphone"></i>
+            <span>Health Voice</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Local SQLite Mesh Sync Queue -->
+      <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200">
+        <div class="flex items-center justify-between mb-3">
+          <p class="text-xs font-mono-code uppercase tracking-wider text-[#0D6E6E] font-bold">3. Encrypted SQLite Queue</p>
+          <span class="text-[11px] font-mono-code bg-slate-100 px-2 py-0.5 rounded text-slate-600">AES-256</span>
+        </div>
+        <ul id="sync-log" class="space-y-2 text-xs font-mono-code text-slate-700 max-h-44 overflow-y-auto">
+          <!-- Populated dynamically via JS -->
+        </ul>
+      </div>
+    </aside>
+
+    <!-- Right Main Panel: Active Edge Module -->
+    <section class="lg:col-span-8 flex flex-col">
+
+      <!-- MODULE 0: WANADONGRI LOCAL WATER & COMMUNITY RESOURCE MAP -->
+      <div id="panel-map" class="bg-white rounded-2xl p-5 sm:p-6 shadow-sm border border-slate-200 flex-grow flex flex-col">
+        <div class="border-b border-slate-100 pb-4 mb-4 flex flex-wrap justify-between items-start gap-3">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-mono-code text-[#0D6E6E] uppercase font-bold">Offline Vector GIS • Hingna Taluka, Nagpur</span>
+              <span class="text-[11px] font-mono-code bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded border border-emerald-200 font-bold">Cached Local Tiles</span>
+            </div>
+            <h2 class="text-xl sm:text-2xl font-extrabold text-[#142321] mt-0.5">Wanadongri Water & Community Resource Map</h2>
+          </div>
+
+          <!-- Zoom Controls -->
+          <div class="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl border border-slate-200">
+            <button onclick="zoomMap(0.2)" title="Zoom In" class="w-8 h-8 rounded-lg bg-white hover:bg-slate-50 text-slate-700 font-bold shadow-xs flex items-center justify-center cursor-pointer">
+              <i class="fa-solid fa-plus text-xs"></i>
+            </button>
+            <button onclick="zoomMap(-0.2)" title="Zoom Out" class="w-8 h-8 rounded-lg bg-white hover:bg-slate-50 text-slate-700 font-bold shadow-xs flex items-center justify-center cursor-pointer">
+              <i class="fa-solid fa-minus text-xs"></i>
+            </button>
+            <button onclick="resetMapView()" title="Reset View" class="px-2.5 h-8 rounded-lg bg-white hover:bg-slate-50 text-slate-700 font-mono-code text-xs font-bold shadow-xs cursor-pointer">
+              Reset
+            </button>
+          </div>
+        </div>
+
+        <!-- Category Filter Bar -->
+        <div class="flex flex-wrap items-center gap-2 mb-4">
+          <button onclick="filterMapCategory('all')" id="filter-all" class="map-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-[#142321] text-white cursor-pointer transition">
+            All Resources (10)
+          </button>
+          <button onclick="filterMapCategory('water')" id="filter-water" class="map-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-sky-50 text-sky-800 border border-sky-200 hover:bg-sky-100 cursor-pointer transition flex items-center gap-1.5">
+            <i class="fa-solid fa-droplet text-sky-600"></i> Water Sources (4)
+          </button>
+          <button onclick="filterMapCategory('health')" id="filter-health" class="map-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-rose-50 text-rose-800 border border-rose-200 hover:bg-rose-100 cursor-pointer transition flex items-center gap-1.5">
+            <i class="fa-solid fa-kit-medical text-rose-600"></i> Healthcare (2)
+          </button>
+          <button onclick="filterMapCategory('edu')" id="filter-edu" class="map-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200 hover:bg-amber-100 cursor-pointer transition flex items-center gap-1.5">
+            <i class="fa-solid fa-school text-amber-600"></i> Education & Hub (2)
+          </button>
+          <button onclick="filterMapCategory('agri')" id="filter-agri" class="map-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200 hover:bg-emerald-100 cursor-pointer transition flex items-center gap-1.5">
+            <i class="fa-solid fa-solar-panel text-emerald-600"></i> Agri & Solar (2)
+          </button>
+        </div>
+
+        <!-- Interactive Offline SVG GIS Map Viewport -->
+        <div class="relative w-full h-[380px] sm:h-[420px] rounded-2xl overflow-hidden border-2 border-slate-200 bg-[#EEF3EE] select-none" id="map-wrapper">
+          <svg id="wanadongri-svg" viewBox="0 0 800 480" role="img" aria-label="Interactive schematic map of Wanadongri community resources" class="w-full h-full cursor-grab active:cursor-grabbing">
+            <defs>
+              <!-- Topographic Contour Pattern -->
+              <pattern id="grid-pattern" width="40" height="40" patternUnits="userSpaceOnUse">
+                <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#DCE5DC" stroke-width="0.8"/>
+              </pattern>
+              <linearGradient id="river-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#38BDF8" stop-opacity="0.75"/>
+                <stop offset="100%" stop-color="#0284C7" stop-opacity="0.85"/>
+              </linearGradient>
+              <linearGradient id="hill-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#D5E2D2" stop-opacity="0.7"/>
+                <stop offset="100%" stop-color="#E5ECE3" stop-opacity="0.2"/>
+              </linearGradient>
+            </defs>
+
+            <!-- Pan & Zoom Group -->
+            <g id="map-viewport" transform="translate(0,0) scale(1)">
+              <!-- Base Terrain Grid -->
+              <rect x="-200" y="-200" width="1200" height="880" fill="url(#grid-pattern)" />
+
+              <!-- Dongri (Hillock / Elevation Contours North-West of Wani Dongri) -->
+              <path d="M 30,40 Q 150,15 260,75 T 310,175 Q 190,210 85,165 T 30,40 Z" fill="url(#hill-grad)" stroke="#B8CBB5" stroke-width="1.5" stroke-dasharray="5,4"/>
+              <path d="M 65,65 Q 145,45 215,90 T 245,145 Q 165,170 95,135 T 65,65 Z" fill="#CBDAC8" fill-opacity="0.45" stroke="#A7BDA4" stroke-width="1"/>
+              <text x="145" y="102" font-family="Space Mono, monospace" font-size="10" fill="#5A7258" font-weight="bold" text-anchor="middle">DONGRI RIDGE (338m)</text>
+
+              <!-- Agricultural Farmland Plots (South & East Sectors) -->
+              <rect x="440" y="250" width="140" height="90" rx="8" fill="#E1ECD9" stroke="#C5D8B8" stroke-width="1.2"/>
+              <text x="510" y="298" font-family="DM Sans, sans-serif" font-size="10" fill="#5F7A52" font-weight="bold" text-anchor="middle">Cotton & Soybean Sector</text>
+
+              <rect x="595" y="240" width="150" height="110" rx="8" fill="#E4EEDB" stroke="#C5D8B8" stroke-width="1.2"/>
+              <text x="670" y="298" font-family="DM Sans, sans-serif" font-size="10" fill="#5F7A52" font-weight="bold" text-anchor="middle">Orange Orchard & Drip Zone</text>
+
+              <rect x="130" y="330" width="170" height="105" rx="8" fill="#E1ECD9" stroke="#C5D8B8" stroke-width="1.2"/>
+              <text x="215" y="385" font-family="DM Sans, sans-serif" font-size="10" fill="#5F7A52" font-weight="bold" text-anchor="middle">Kharif Farm Cluster B</text>
+
+              <!-- Vena River Tributary / Wanadongri Nallah & Percolation Pond -->
+              <path d="M 760,20 C 680,85 630,130 575,185 C 520,240 430,275 370,340 C 325,390 290,440 265,485" fill="none" stroke="url(#river-grad)" stroke-width="18" stroke-linecap="round"/>
+              <path d="M 760,20 C 680,85 630,130 575,185 C 520,240 430,275 370,340 C 325,390 290,440 265,485" fill="none" stroke="#BAE6FD" stroke-width="2" stroke-dasharray="8,6"/>
+              <text x="655" y="92" transform="rotate(-40 655 92)" font-family="Space Mono, monospace" font-size="10" fill="#0369A1" font-weight="bold">VENA TRIBUTARY / WANADONGRI NALLAH</text>
+
+              <!-- Percolation Pond / Check Dam Reservoir -->
+              <ellipse cx="565" cy="190" rx="34" ry="22" fill="#0EA5E9" fill-opacity="0.45" stroke="#0284C7" stroke-width="2"/>
+              <ellipse cx="565" cy="190" rx="34" ry="22" fill="none" stroke="#38BDF8" stroke-width="2" class="water-ripple"/>
+
+              <!-- Main Arterial Highway: Hingna Road (Nagpur <-> Hingna MIDC) -->
+              <path d="M -20,245 Q 220,220 420,210 T 820,175" fill="none" stroke="#64748B" stroke-width="14" stroke-linecap="round"/>
+              <path d="M -20,245 Q 220,220 420,210 T 820,175" fill="none" stroke="#F8FAFC" stroke-width="1.5" stroke-dasharray="10,8"/>
+              <rect x="65" y="218" width="165" height="20" rx="4" fill="#334155"/>
+              <text x="147" y="231" font-family="Space Mono, monospace" font-size="9.5" fill="#F8FAFC" font-weight="bold" text-anchor="middle">← HINGNA MIDC / NAGPUR →</text>
+
+              <!-- Village Internal Roads -->
+              <path d="M 340,215 L 330,115 L 430,85" fill="none" stroke="#94A3B8" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M 380,212 L 395,335 L 510,340" fill="none" stroke="#94A3B8" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M 250,225 L 235,330" fill="none" stroke="#94A3B8" stroke-width="5" stroke-linecap="round"/>
+
+              <!-- Wanadongri Village Residential Cluster -->
+              <g opacity="0.85">
+                <rect x="285" y="135" width="110" height="62" rx="10" fill="#F1E8DC" stroke="#D6C7B2" stroke-width="1.5"/>
+                <text x="340" y="156" font-family="DM Sans, sans-serif" font-size="11" fill="#574B3A" font-weight="800" text-anchor="middle">WANADONGRI</text>
+                <text x="340" y="169" font-family="Space Mono, monospace" font-size="8.5" fill="#786852" text-anchor="middle">Gram Panchayat</text>
+                <!-- Stylized village homes -->
+                <rect x="298" y="176" width="12" height="10" rx="2" fill="#C2A887"/>
+                <rect x="316" y="176" width="12" height="10" rx="2" fill="#C2A887"/>
+                <rect x="334" y="176" width="12" height="10" rx="2" fill="#C2A887"/>
+                <rect x="352" y="176" width="12" height="10" rx="2" fill="#C2A887"/>
+                <rect x="370" y="176" width="12" height="10" rx="2" fill="#C2A887"/>
+              </g>
+
+              <!-- Dynamic Resource Markers Layer -->
+              <g id="map-markers-layer"></g>
+            </g>
+          </svg>
+
+          <!-- Floating Legend & Coordinates Overlay -->
+          <div class="absolute bottom-3 left-3 bg-white/95 backdrop-blur-xs px-3 py-2 rounded-xl border border-slate-200 shadow-xs text-[11px] flex flex-wrap items-center gap-3">
+            <span class="flex items-center gap-1.5 font-bold text-sky-700"><span class="w-2.5 h-2.5 rounded-full bg-sky-500"></span> Water</span>
+            <span class="flex items-center gap-1.5 font-bold text-rose-700"><span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span> Health</span>
+            <span class="flex items-center gap-1.5 font-bold text-amber-700"><span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span> Edu/Hub</span>
+            <span class="flex items-center gap-1.5 font-bold text-emerald-700"><span class="w-2.5 h-2.5 rounded-full bg-emerald-600"></span> Agri/Solar</span>
+          </div>
+
+          <div class="absolute top-3 right-3 bg-[#0F2A26]/90 text-white px-2.5 py-1 rounded-lg font-mono-code text-[10px]">
+            21.0942° N, 78.9938° E
+          </div>
+        </div>
+
+        <!-- Selected Resource Live Sensor & Action Inspector Card -->
+        <div id="resource-inspector" class="mt-4 bg-[#EFF5F4] border border-teal-200 rounded-2xl p-4 sm:p-5">
+          <!-- Populated dynamically when a marker or directory item is clicked -->
+        </div>
+
+        <!-- Quick Resource Directory Strip -->
+        <div class="mt-4">
+          <div class="flex items-center justify-between mb-2">
+            <p class="text-xs font-mono-code uppercase font-bold text-slate-600">Wanadongri Resource Directory (Click to Locate)</p>
+            <span class="text-xs text-slate-500" id="visible-count-label">Showing 10 locations</span>
+          </div>
+          <div id="resource-directory" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-48 overflow-y-auto pr-1">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+      </div>
+
+      <!-- MODULE 1: RURAL HEALTH TRIAGE -->
+      <div id="panel-health" class="hidden bg-white rounded-2xl p-6 shadow-sm border border-slate-200 flex-grow flex-col">
+        <div class="border-b border-slate-100 pb-4 mb-5 flex flex-wrap justify-between items-center gap-2">
+          <div>
+            <span class="text-xs font-mono-code text-[#0D6E6E] uppercase font-bold">Edge Medical Inference</span>
+            <h2 class="text-2xl font-extrabold text-[#142321]">Rural Health Triage Assistant</h2>
+          </div>
+          <span class="text-xs font-mono-code bg-[#EFF5F4] text-[#0D6E6E] px-3 py-1 rounded-full font-bold">Latency: 140ms (Local NPU)</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div>
+            <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Patient Age & Group</label>
+            <input type="text" id="patient-age" value="34 yrs, Adult (Wanadongri Ward 2)" class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 text-sm focus:outline-none focus:border-[#0D6E6E]">
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Vitals (Optional)</label>
+            <input type="text" id="patient-vitals" value="Temp: 102.4°F, SpO2: 96%" class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 text-sm focus:outline-none focus:border-[#0D6E6E]">
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Reported Symptoms</label>
+          <textarea id="patient-symptoms" rows="3" class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 text-sm focus:outline-none focus:border-[#0D6E6E]" placeholder="Describe symptoms...">High fever for 3 days, severe headache, joint pain, and mild dehydration.</textarea>
+        </div>
+
+        <div class="flex flex-wrap gap-2 mb-5">
+          <button onclick="setSymptomPreset('High fever for 3 days, severe headache, joint pain, and mild dehydration.')" class="text-xs bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg font-medium cursor-pointer">Preset: Vector Fever</button>
+          <button onclick="setSymptomPreset('Persistent cough for 2 weeks, shortness of breath, mild chest tightness.')" class="text-xs bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg font-medium cursor-pointer">Preset: Respiratory</button>
+          <button onclick="setSymptomPreset('Acute watery diarrhea and vomiting in child, dry lips, lethargy.')" class="text-xs bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg font-medium cursor-pointer">Preset: Dehydration</button>
+        </div>
+
+        <button onclick="runHealthTriage()" class="w-full md:w-auto self-start bg-[#0D6E6E] hover:bg-teal-800 text-white font-bold px-6 py-3 rounded-xl text-sm flex items-center gap-2 transition cursor-pointer">
+          <i class="fa-solid fa-bolt"></i>
+          <span>Run Offline AI Triage</span>
+        </button>
+
+        <!-- Triage Output Box -->
+        <div id="triage-result" class="mt-6 bg-[#EFF5F4] border-l-4 border-[#0D6E6E] rounded-r-xl p-5">
+          <div class="flex items-center justify-between mb-2">
+            <span class="font-bold text-[#0D6E6E] text-sm uppercase font-mono-code">AI Assessment Ready</span>
+            <span class="text-xs font-mono-code bg-[#E07A5F] text-white px-2.5 py-0.5 rounded font-bold">PRIORITY: MODERATE-HIGH</span>
+          </div>
+          <p class="text-sm text-[#142321] font-medium mb-2"><strong>Suspected Condition:</strong> Vector-borne viral fever (Dengue/Malaria screening advised).</p>
+          <ul class="text-sm text-slate-700 list-disc pl-5 space-y-1">
+            <li>Administer Oral Rehydration Salts (ORS) from Wanadongri ASHA Kendra (320m away).</li>
+            <li>Perform rapid antigen dipstick test available in Sub-Centre Kit #2.</li>
+            <li>Queued encrypted referral packet for Hingna Rural Hospital review upon next mesh sync.</li>
+          </ul>
+        </div>
+
+        <!-- OFFLINE BMI & NUTRITION TRIAGE CALCULATOR (ASIAN-INDIAN WHO/ICMR CUTOFFS) -->
+        <div id="bmi-triage-card" class="mt-6 pt-6 border-t border-slate-200">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+            <div>
+              <span class="text-xs font-mono-code text-[#0D6E6E] uppercase font-bold">ASHA & Anganwadi Nutrition Screening</span>
+              <h3 class="text-lg sm:text-xl font-extrabold text-[#142321] flex items-center gap-2">
+                <i class="fa-solid fa-weight-scale text-[#E07A5F]"></i>
+                Offline BMI & Nutrition Triage
+              </h3>
+            </div>
+            <span class="text-[11px] font-mono-code bg-amber-50 text-amber-800 border border-amber-200 px-2.5 py-1 rounded-full font-bold">
+              WHO / ICMR Asian-Indian Standards
+            </span>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
+            <div>
+              <label for="bmi-age" class="block text-xs font-bold uppercase text-slate-600 mb-1">Age (Yrs)</label>
+              <input type="number" id="bmi-age" min="5" max="110" value="28" oninput="calculateBMI()" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:outline-none focus:border-[#0D6E6E]">
+            </div>
+            <div>
+              <label for="bmi-gender" class="block text-xs font-bold uppercase text-slate-600 mb-1">Gender</label>
+              <select id="bmi-gender" onchange="calculateBMI()" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm bg-white focus:outline-none focus:border-[#0D6E6E]">
+                <option value="Female">Female</option>
+                <option value="Male">Male</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div>
+              <label for="bmi-weight" class="block text-xs font-bold uppercase text-slate-600 mb-1">Weight (kg)</label>
+              <input type="number" id="bmi-weight" min="10" max="250" step="0.1" value="54" oninput="calculateBMI()" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:outline-none focus:border-[#0D6E6E]">
+            </div>
+            <div>
+              <label for="bmi-height" class="block text-xs font-bold uppercase text-slate-600 mb-1">Height (cm)</label>
+              <input type="number" id="bmi-height" min="60" max="240" step="0.5" value="158" oninput="calculateBMI()" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:outline-none focus:border-[#0D6E6E]">
+            </div>
+          </div>
+
+          <!-- Quick Screening Presets -->
+          <div class="flex flex-wrap gap-2 mb-4">
+            <button type="button" onclick="setBmiPreset(24, 'Female', 42, 156)" class="text-xs bg-slate-100 hover:bg-slate-200 px-2.5 py-1 rounded-lg font-medium cursor-pointer">Preset: Underweight Maternal</button>
+            <button type="button" onclick="setBmiPreset(28, 'Female', 54, 158)" class="text-xs bg-slate-100 hover:bg-slate-200 px-2.5 py-1 rounded-lg font-medium cursor-pointer">Preset: Normal Adult</button>
+            <button type="button" onclick="setBmiPreset(45, 'Male', 76, 168)" class="text-xs bg-slate-100 hover:bg-slate-200 px-2.5 py-1 rounded-lg font-medium cursor-pointer">Preset: Elevated Metabolic Risk</button>
+          </div>
+
+          <!-- BMI Result & Visual Gauge Card -->
+          <div id="bmi-result-box" class="bg-[#FAF9F6] border border-slate-200 rounded-xl p-4 sm:p-5">
+            <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
+              <div class="flex items-baseline gap-3">
+                <span id="bmi-score" class="text-3xl sm:text-4xl font-extrabold text-[#0D6E6E] font-mono-code">21.6</span>
+                <div>
+                  <span id="bmi-category-badge" class="text-xs font-mono-code font-bold px-2.5 py-0.5 rounded bg-emerald-100 text-emerald-800">NORMAL (ASIAN-INDIAN)</span>
+                  <p id="bmi-healthy-range" class="text-xs text-slate-600 mt-1 font-medium">Healthy Weight for 158 cm: <strong>46.2 – 57.2 kg</strong></p>
+                </div>
+              </div>
+              <button type="button" onclick="logBmiScreening()" class="bg-[#142321] hover:bg-slate-800 text-white font-bold px-4 py-2.5 rounded-xl text-xs flex items-center gap-2 transition cursor-pointer">
+                <i class="fa-solid fa-database text-[#E07A5F]"></i>
+                <span>Log BMI Screening to SQLite Queue</span>
+              </button>
+            </div>
+
+            <!-- Visual Asian-Indian Cutoff Gauge Bar -->
+            <div class="mb-4">
+              <div class="relative h-3 w-full rounded-full overflow-hidden flex bg-slate-200">
+                <div class="h-full bg-sky-400" style="width: 28%" title="Underweight (<18.5)"></div>
+                <div class="h-full bg-emerald-500" style="width: 24%" title="Normal (18.5–22.9)"></div>
+                <div class="h-full bg-amber-400" style="width: 16%" title="Overweight (23.0–24.9)"></div>
+                <div class="h-full bg-rose-500" style="width: 32%" title="Obese (≥25.0)"></div>
+              </div>
+              <div class="relative h-3 w-full">
+                <div id="bmi-gauge-marker" class="absolute -top-3.5 -translate-x-1/2 transition-all duration-300" style="left: 45%">
+                  <div class="w-3.5 h-3.5 rounded-full bg-[#142321] border-2 border-white shadow"></div>
+                </div>
+              </div>
+              <div class="flex justify-between text-[10px] font-mono-code text-slate-500 mt-0.5">
+                <span>&lt;18.5 Under</span>
+                <span>18.5–22.9 Normal</span>
+                <span>23–24.9 Over</span>
+                <span>≥25.0 Obese</span>
+              </div>
+            </div>
+
+            <!-- Localized Wanadongri Nutrition & PHC Guidance -->
+            <div id="bmi-guidance" class="bg-[#EFF5F4] border-l-4 border-[#0D6E6E] rounded-r-lg p-3.5 text-xs sm:text-sm text-slate-700 space-y-1">
+              <!-- Populated dynamically via calculateBMI() -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MODULE 2: DIALECT AI TUTOR -->
+      <div id="panel-edu" class="hidden bg-white rounded-2xl p-6 shadow-sm border border-slate-200 flex-grow flex-col">
+        <div class="border-b border-slate-100 pb-4 mb-5 flex flex-wrap justify-between items-center gap-2">
+          <div>
+            <span class="text-xs font-mono-code text-[#E07A5F] uppercase font-bold">Offline Adaptive Learning</span>
+            <h2 class="text-2xl font-extrabold text-[#142321]">Local Dialect STEM Tutor</h2>
+          </div>
+          <span class="text-xs font-mono-code bg-orange-50 text-[#E07A5F] px-3 py-1 rounded-full font-bold">Zero-Data Curriculum</span>
+        </div>
+
+        <div class="flex gap-2 mb-4">
+          <input type="text" id="tutor-question" value="How do solar panels generate electricity for our village?" class="flex-grow px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:border-[#E07A5F]">
+          <button onclick="askTutor()" class="bg-[#E07A5F] hover:bg-[#d0694e] text-white font-bold px-5 py-2.5 rounded-xl text-sm cursor-pointer">Ask AI</button>
+        </div>
+
+        <div class="flex flex-wrap gap-2 mb-5">
+          <button onclick="setTutorPreset('How do solar panels generate electricity for our village?')" class="text-xs bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg font-medium cursor-pointer">Solar Energy Basics</button>
+          <button onclick="setTutorPreset('Why is crop rotation important for Vidarbha black cotton soil?')" class="text-xs bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg font-medium cursor-pointer">Black Soil Science</button>
+          <button onclick="setTutorPreset('How does the Gram Panchayat RO ATM purify borewell water?')" class="text-xs bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg font-medium cursor-pointer">RO Water Chemistry</button>
+        </div>
+
+        <div id="tutor-output" class="bg-[#FAF9F6] border border-slate-200 rounded-xl p-5 flex-grow flex flex-col justify-between">
+          <div>
+            <div class="flex items-center gap-2 mb-2">
+              <span class="text-xs font-mono-code font-bold text-[#0D6E6E]">EDGE TUTOR RESPONSE (MARATHI + ENGLISH)</span>
+            </div>
+            <p id="tutor-answer" class="text-sm text-[#142321] leading-relaxed mb-3">
+              <strong>Solar Photovoltaic Effect:</strong> Sunlight carries tiny energy packets called photons. When they hit silicon cells on Wanadongri's roof panels, they knock electrons loose, creating Direct Current (DC) electricity. An inverter converts this into Alternating Current (AC) to power lights, water pumps, and this CivicPulse hub!
+            </p>
+          </div>
+          <div class="bg-[#EFF5F4] p-3 rounded-lg text-xs text-[#0D6E6E] font-medium">
+            <i class="fa-solid fa-circle-question mr-1"></i> <strong>Quick Check:</strong> What device converts DC electricity from solar panels into AC power for village homes?
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-5 bg-amber-50 border border-amber-100 rounded-2xl p-4">
+        <div class="flex flex-wrap justify-between gap-2"><div><b class="text-amber-900">Quick Learning Quiz</b><p class="text-xs text-amber-800 mt-1">Test a concept from the local STEM lessons.</p></div><span class="status-pill bg-white text-amber-800">1 question</span></div>
+        <p class="text-sm font-bold mt-3">Which device converts solar panel DC electricity into AC electricity?</p>
+        <div class="flex flex-wrap gap-2 mt-3"><button class="soft-btn" onclick="checkTutorQuiz('battery')">Battery</button><button class="soft-btn" onclick="checkTutorQuiz('inverter')">Inverter</button><button class="soft-btn" onclick="checkTutorQuiz('transformer')">Transformer</button></div>
+        <p id="tutor-quiz-result" class="text-sm mt-3" aria-live="polite"></p>
+      </div>
+
+      <!-- MODULE 3: LORAWAN CLIMATE & CROP ALERTS -->
+      <div id="panel-climate" class="hidden bg-white rounded-2xl p-6 shadow-sm border border-slate-200 flex-grow flex-col">
+        <div class="border-b border-slate-100 pb-4 mb-5 flex flex-wrap justify-between items-center gap-2">
+          <div>
+            <span class="text-xs font-mono-code text-[#0D6E6E] uppercase font-bold">LoRaWAN Sensor Mesh • 915MHz</span>
+            <h2 class="text-2xl font-extrabold text-[#142321]">Agri & Climate Early Warning</h2>
+          </div>
+          <span class="text-xs font-mono-code bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full font-bold">4 Farm Nodes Active</span>
+        </div>
+
+        <!-- Live Telemetry Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-5">
+          <div class="bg-[#EFF5F4] p-4 rounded-xl border border-teal-100">
+            <div class="text-xs font-mono-code text-slate-600 mb-1">Soil Moisture (Sector B)</div>
+            <div class="text-3xl font-extrabold text-[#0D6E6E]" id="soil-val">24%</div>
+            <div class="text-xs text-amber-700 font-bold mt-1"><i class="fa-solid fa-triangle-exclamation"></i> Below 30% Threshold</div>
+          </div>
+          <div class="bg-[#EFF5F4] p-4 rounded-xl border border-teal-100">
+            <div class="text-xs font-mono-code text-slate-600 mb-1">Ambient Temp / Humidity</div>
+            <div class="text-3xl font-extrabold text-[#142321]">34.2°C</div>
+            <div class="text-xs text-slate-600 mt-1">Humidity: 41% • Clear Sky</div>
+          </div>
+          <div class="bg-[#EFF5F4] p-4 rounded-xl border border-teal-100">
+            <div class="text-xs font-mono-code text-slate-600 mb-1">Check Dam Water Level</div>
+            <div class="text-3xl font-extrabold text-[#0D6E6E]">78%</div>
+            <div class="text-xs text-emerald-700 font-bold mt-1"><i class="fa-solid fa-check-circle"></i> Sufficient for Drip Cycle</div>
+          </div>
+        </div>
+
+        <div class="bg-amber-50 border-l-4 border-[#E07A5F] p-4 rounded-r-xl mb-5">
+          <h4 class="font-bold text-[#142321] text-sm mb-1"><i class="fa-solid fa-faucet-drip text-[#E07A5F] mr-1"></i> Automated Drip Irrigation Recommendation</h4>
+          <p class="text-sm text-slate-700">Trigger 25-minute micro-drip cycle in <strong>Wanadongri Cotton & Soybean Sector</strong> at 06:00 AM tomorrow. Saves ~70% water compared to flood irrigation.</p>
+        </div>
+
+        <button onclick="dispatchSmsAlert()" class="self-start bg-[#142321] hover:bg-slate-800 text-white font-bold px-5 py-2.5 rounded-xl text-sm flex items-center gap-2 cursor-pointer">
+          <i class="fa-solid fa-tower-broadcast"></i>
+          <span>Broadcast Local LoRa / SMS Alert to Farmers</span>
+        </button>
+      </div>
+
+      <!-- CITIZEN COMPLAINTS -->
+      <div id="panel-citizen" class="hidden bg-white module-panel flex-grow flex-col">
+        <div class="flex flex-wrap justify-between gap-3 border-b border-slate-100 pb-4 mb-5"><div><span class="text-xs font-mono-code font-bold text-orange-600">CITIZEN SERVICES</span><h2 class="text-2xl font-extrabold mt-1">Report a Community Problem</h2><p class="text-sm text-slate-500 mt-1">Submit a local issue and follow its progress.</p></div><span class="status-pill bg-orange-50 text-orange-700">Local demo storage</span></div>
+        <form id="complaint-form" class="grid sm:grid-cols-2 gap-4" onsubmit="submitComplaint(event)">
+          <div><label for="complaint-category">Issue category</label><select id="complaint-category" required><option value="Garbage">Garbage / sanitation</option><option value="Road">Road / pothole</option><option value="Streetlight">Streetlight</option><option value="Water">Water supply</option><option value="Drainage">Drainage</option><option value="Other">Other</option></select></div>
+          <div><label for="complaint-area">Area / landmark</label><input id="complaint-area" required placeholder="e.g. Main Chowk, Wanadongri"></div>
+          <div class="sm:col-span-2"><label for="complaint-description">Describe the problem</label><textarea id="complaint-description" rows="3" required placeholder="Explain what happened and when..."></textarea></div>
+          <div><label for="complaint-contact">Contact number (optional)</label><input id="complaint-contact" inputmode="tel" placeholder="Your phone number"></div>
+          <div><label for="complaint-photo">Attach photo (optional)</label><input id="complaint-photo" type="file" accept="image/*"></div>
+          <div class="sm:col-span-2 flex flex-wrap gap-2"><button class="action-btn" type="submit"><i class="fa-solid fa-paper-plane mr-1"></i> Submit Complaint</button><button class="soft-btn" type="button" onclick="useMyLocation()"><i class="fa-solid fa-location-crosshairs mr-1"></i> Add my location</button><span id="complaint-location" class="text-xs text-slate-500 self-center">Location not added</span></div>
+        </form>
+        <div class="mt-7"><div class="flex justify-between items-center mb-3"><h3 class="font-extrabold">Complaint tracker</h3><span id="complaint-total" class="status-pill bg-slate-100 text-slate-600">0 reports</span></div><div id="complaint-list" class="space-y-3"><p class="text-sm text-slate-500">No complaints submitted in this browser yet.</p></div></div>
+      </div>
+
+      <!-- GOVERNMENT SCHEMES -->
+      <div id="panel-schemes" class="hidden bg-white module-panel flex-grow flex-col">
+        <span class="text-xs font-mono-code font-bold text-indigo-600">PUBLIC BENEFITS DIRECTORY</span><h2 class="text-2xl font-extrabold mt-1 mb-2">Government Schemes & Services</h2><p class="text-sm text-slate-500 mb-5">Explore selected schemes. Eligibility and application rules can change; confirm details on the official portal before applying.</p>
+        <input id="scheme-search" placeholder="Search schemes (farmer, health, scholarship...)" oninput="filterSchemes()" class="mb-4">
+        <div id="scheme-list" class="grid md:grid-cols-2 gap-3">
+          <article class="scheme-card metric-card" data-search="pm kisan farmer income agriculture"><b>PM-KISAN</b><p class="text-sm text-slate-600 my-2">Income support scheme for eligible farmer families.</p><a class="text-sm font-bold text-teal-700 underline" href="https://pmkisan.gov.in/" target="_blank" rel="noopener">Official portal ↗</a></article>
+          <article class="scheme-card metric-card" data-search="ayushman bharat health hospital insurance"><b>Ayushman Bharat PM-JAY</b><p class="text-sm text-slate-600 my-2">Health cover for eligible beneficiaries under scheme rules.</p><a class="text-sm font-bold text-teal-700 underline" href="https://pmjay.gov.in/" target="_blank" rel="noopener">Official portal ↗</a></article>
+          <article class="scheme-card metric-card" data-search="mahadbt scholarship student education subsidy"><b>MahaDBT</b><p class="text-sm text-slate-600 my-2">Maharashtra scholarship and benefit application portal.</p><a class="text-sm font-bold text-teal-700 underline" href="https://mahadbt.maharashtra.gov.in/" target="_blank" rel="noopener">Official portal ↗</a></article>
+          <article class="scheme-card metric-card" data-search="pm awas yojana housing home"><b>Pradhan Mantri Awas Yojana</b><p class="text-sm text-slate-600 my-2">Housing assistance information for eligible households.</p><a class="text-sm font-bold text-teal-700 underline" href="https://pmaymis.gov.in/" target="_blank" rel="noopener">Official portal ↗</a></article>
+          <article class="scheme-card metric-card" data-search="agriculture subsidy farmer pm kisan samman"><b>Ministry of Agriculture</b><p class="text-sm text-slate-600 my-2">Agriculture programmes, advisories and farmer services.</p><a class="text-sm font-bold text-teal-700 underline" href="https://agriwelfare.gov.in/" target="_blank" rel="noopener">Official portal ↗</a></article>
+          <article class="scheme-card metric-card" data-search="mygov citizen participation survey"><b>MyGov India</b><p class="text-sm text-slate-600 my-2">Citizen participation, consultations and public initiatives.</p><a class="text-sm font-bold text-teal-700 underline" href="https://www.mygov.in/" target="_blank" rel="noopener">Official portal ↗</a></article>
+        </div><p class="text-xs text-amber-700 bg-amber-50 rounded-xl p-3 mt-5">Important: CivicPulse is an information directory, not a government authority. Never submit sensitive documents through this demo.</p>
+      </div>
+
+      <!-- FARMER ASSISTANCE -->
+      <div id="panel-agriculture" class="hidden bg-white module-panel flex-grow flex-col">
+        <span class="text-xs font-mono-code font-bold text-green-700">VIDARBHA FARM SUPPORT</span><h2 class="text-2xl font-extrabold mt-1">Farmer Assistance Centre</h2><p class="text-sm text-slate-500 mt-1 mb-5">Basic decision-support examples for local farming. Confirm advice with the agriculture department or a qualified agronomist.</p>
+        <div class="grid sm:grid-cols-3 gap-3 mb-5"><div class="metric-card"><div class="text-xs text-slate-500">Example soil type</div><b class="text-lg">Black cotton soil</b></div><div class="metric-card"><div class="text-xs text-slate-500">Example crops</div><b class="text-lg">Cotton • Soybean</b></div><div class="metric-card"><div class="text-xs text-slate-500">Sensor connection</div><b class="text-lg">Demo / not live</b></div></div>
+        <div class="grid sm:grid-cols-2 gap-4"><div><label for="crop-choice">Select crop</label><select id="crop-choice"><option value="cotton">Cotton</option><option value="soybean">Soybean</option><option value="orange">Orange</option><option value="tur">Tur (Pigeon pea)</option></select></div><div><label for="soil-moisture-input">Soil moisture (%)</label><input id="soil-moisture-input" type="number" min="0" max="100" value="24"></div><div><label for="crop-stage">Crop stage</label><select id="crop-stage"><option>Sowing</option><option>Vegetative</option><option>Flowering</option><option>Harvest</option></select></div><div><label for="farm-area">Farm area (acres, optional)</label><input id="farm-area" type="number" min="0" step="0.1" placeholder="e.g. 2.5"></div></div>
+        <button class="action-btn self-start mt-4" onclick="getFarmAdvice()"><i class="fa-solid fa-wand-magic-sparkles mr-1"></i> Get farming suggestions</button><div id="farm-advice" class="metric-card mt-4 text-sm" aria-live="polite">Choose your crop and enter the soil moisture reading to see general guidance.</div>
+        <div class="grid sm:grid-cols-2 gap-3 mt-5"><a class="soft-btn text-center" href="https://agmarknet.gov.in/" target="_blank" rel="noopener">Check Agmarknet market prices ↗</a><a class="soft-btn text-center" href="https://soilhealth.dac.gov.in/" target="_blank" rel="noopener">Soil Health Card portal ↗</a></div>
+        <div class="mt-5"><label for="crop-photo">Crop / pest photo (for demonstration only)</label><input id="crop-photo" type="file" accept="image/*" onchange="previewCropPhoto(event)"><div id="crop-photo-preview" class="text-xs text-slate-500 mt-2">No photo selected. Image diagnosis requires a connected, validated AI service.</div></div>
+      </div>
+
+      <!-- WEATHER AND AQI -->
+      <div id="panel-weather" class="hidden bg-white module-panel flex-grow flex-col">
+        <div class="flex flex-wrap justify-between gap-2"><div><span class="text-xs font-mono-code font-bold text-sky-700">ENVIRONMENT WATCH</span><h2 class="text-2xl font-extrabold mt-1">Weather & Air Quality</h2><p class="text-sm text-slate-500">Wanadongri / Hingna, Nagpur</p></div><span class="status-pill bg-amber-50 text-amber-800">Sample dashboard data</span></div>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-5"><div class="metric-card"><i class="fa-solid fa-temperature-half text-orange-500"></i><div class="text-xs text-slate-500 mt-2">Temperature</div><b class="text-2xl">34.2°C</b></div><div class="metric-card"><i class="fa-solid fa-droplet text-sky-600"></i><div class="text-xs text-slate-500 mt-2">Humidity</div><b class="text-2xl">41%</b></div><div class="metric-card"><i class="fa-solid fa-wind text-teal-700"></i><div class="text-xs text-slate-500 mt-2">Wind</div><b class="text-2xl">8 km/h</b></div><div class="metric-card"><i class="fa-solid fa-smog text-slate-600"></i><div class="text-xs text-slate-500 mt-2">AQI</div><b class="text-2xl">--</b><small class="block text-xs text-slate-500">Not connected</small></div></div>
+        <div class="bg-sky-50 border border-sky-100 rounded-2xl p-4 mt-5"><b class="text-sky-900">Weather advisory</b><p class="text-sm text-slate-700 mt-1">These values are placeholders for the interface preview, not a live forecast. Connect an approved weather and air-quality API to show current conditions and issue reliable alerts.</p></div>
+        <div class="flex flex-wrap gap-2 mt-4"><a class="soft-btn" href="https://mausam.imd.gov.in/" target="_blank" rel="noopener">India Meteorological Department ↗</a><a class="soft-btn" href="https://cpcb.nic.in/" target="_blank" rel="noopener">CPCB air quality ↗</a></div>
+      </div>
+
+      <!-- EMERGENCY -->
+      <div id="panel-emergency" class="hidden bg-white module-panel flex-grow flex-col">
+        <span class="text-xs font-mono-code font-bold text-rose-600">QUICK ACCESS • INDIA</span><h2 class="text-2xl font-extrabold mt-1">Emergency Help</h2><p class="text-sm text-slate-500 mt-1 mb-5">If someone is in immediate danger, contact emergency services directly. Do not rely on this demo site for emergency dispatch.</p>
+        <div class="grid sm:grid-cols-2 gap-3"><a href="tel:112" class="metric-card flex items-center justify-between"><span><small class="text-slate-500">All-in-one emergency response</small><b class="block text-2xl">112</b></span><i class="fa-solid fa-phone-volume text-2xl text-rose-600"></i></a><a href="tel:108" class="metric-card flex items-center justify-between"><span><small class="text-slate-500">Ambulance (where available)</small><b class="block text-2xl">108</b></span><i class="fa-solid fa-truck-medical text-2xl text-rose-600"></i></a></div>
+        <h3 class="font-extrabold mt-6 mb-3">Find nearby services</h3><div class="grid sm:grid-cols-2 gap-3"><a class="soft-btn text-center" target="_blank" rel="noopener" href="https://www.google.com/maps/search/hospital+near+Wanadongri+Nagpur">Nearby hospitals ↗</a><a class="soft-btn text-center" target="_blank" rel="noopener" href="https://www.google.com/maps/search/police+station+near+Wanadongri+Nagpur">Police stations ↗</a><a class="soft-btn text-center" target="_blank" rel="noopener" href="https://www.google.com/maps/search/fire+station+near+Wanadongri+Nagpur">Fire services ↗</a><a class="soft-btn text-center" target="_blank" rel="noopener" href="https://www.google.com/maps/search/primary+health+centre+near+Wanadongri+Nagpur">Primary health centres ↗</a></div>
+        <div class="bg-amber-50 rounded-xl p-3 mt-5 text-xs text-amber-800">Please verify local facility addresses and telephone numbers with the relevant authorities before publishing this directory.</div>
+      </div>
+
+      <!-- AI COMMUNITY ASSISTANT -->
+      <div id="panel-assistant" class="hidden bg-white module-panel flex-grow flex-col">
+        <span class="text-xs font-mono-code font-bold text-violet-700">COMMUNITY KNOWLEDGE HELPER</span><h2 class="text-2xl font-extrabold mt-1">Ask CivicPulse</h2><p class="text-sm text-slate-500 mt-1 mb-4">Ask about local services, water, complaints, schemes, farming or learning.</p>
+        <div id="chat-history" class="bg-slate-50 border border-slate-200 rounded-2xl p-4 min-h-52 max-h-80 overflow-y-auto space-y-3"><div class="bg-white border border-slate-100 rounded-xl p-3 text-sm">Hello! I can help you find a module or explain the demo services. What would you like to know?</div></div>
+        <form class="flex gap-2 mt-3" onsubmit="askCommunityAssistant(event)"><input id="chat-question" placeholder="Type your question..." required><button type="button" class="soft-btn shrink-0" title="Voice input" onclick="startVoiceInput('chat-question')"><i class="fa-solid fa-microphone"></i></button><button class="action-btn shrink-0">Send</button></form>
+        <div class="flex flex-wrap gap-2 mt-3"><button class="soft-btn" onclick="quickAsk('How do I report garbage?')">Report garbage</button><button class="soft-btn" onclick="quickAsk('Which government schemes are listed?')">Government schemes</button><button class="soft-btn" onclick="quickAsk('How can farmers get help?')">Farmer help</button></div>
+        <p class="text-xs text-amber-700 mt-4">This is a rule-based local demo assistant, not a connected generative AI model. It does not replace official advice.</p>
+      </div>
+
+      <!-- ADMIN DASHBOARD -->
+      <div id="panel-admin" class="hidden bg-white module-panel flex-grow flex-col">
+        <div class="flex flex-wrap justify-between gap-2"><div><span class="text-xs font-mono-code font-bold text-slate-600">COMMUNITY OPERATIONS</span><h2 class="text-2xl font-extrabold mt-1">Administrator Dashboard</h2></div><span class="status-pill bg-amber-50 text-amber-800">Demo analytics</span></div>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-5"><div class="metric-card"><small class="text-slate-500">Complaints</small><b id="admin-complaints" class="block text-3xl">0</b></div><div class="metric-card"><small class="text-slate-500">Pending</small><b id="admin-pending" class="block text-3xl">0</b></div><div class="metric-card"><small class="text-slate-500">Resolved</small><b id="admin-resolved" class="block text-3xl">0</b></div><div class="metric-card"><small class="text-slate-500">Mapped places</small><b class="block text-3xl">10</b></div></div>
+        <div class="mt-6"><h3 class="font-extrabold mb-3">Manage citizen reports</h3><div id="admin-complaint-list" class="space-y-2 text-sm">No reports yet.</div></div>
+        <div class="mt-6"><h3 class="font-extrabold mb-2">Service health checklist</h3><div class="space-y-2 text-sm"><p class="p-3 bg-slate-50 rounded-lg">Resource map: local sample dataset</p><p class="p-3 bg-slate-50 rounded-lg">Weather / AQI: API connection required</p><p class="p-3 bg-slate-50 rounded-lg">Complaints: saved in this browser only</p><p class="p-3 bg-slate-50 rounded-lg">Cloud sync, authentication and role permissions: backend required</p></div></div>
+        <button class="soft-btn self-start mt-5" onclick="exportComplaints()"><i class="fa-solid fa-download mr-1"></i> Export complaint report (CSV)</button>
+      </div>
+
+      <!-- RESIDENT ACCOUNT -->
+      <div id="panel-account" class="hidden bg-white module-panel flex-grow flex-col">
+        <span class="text-xs font-mono-code font-bold text-teal-700">RESIDENT PROFILE</span><h2 class="text-2xl font-extrabold mt-1">Resident Account</h2><p class="text-sm text-slate-500 mt-1 mb-5">Create a local demo profile to personalize the interface. This is not secure production authentication.</p>
+        <form id="account-form" class="grid sm:grid-cols-2 gap-4" onsubmit="saveDemoProfile(event)"><div><label for="resident-name">Full name</label><input id="resident-name" required placeholder="Your name"></div><div><label for="resident-ward">Ward / area</label><input id="resident-ward" placeholder="Your area"></div><div><label for="resident-language">Preferred language</label><select id="resident-language"><option>Marathi</option><option>Hindi</option><option>English</option></select></div><div><label for="resident-phone">Phone (optional)</label><input id="resident-phone" inputmode="tel" placeholder="Phone number"></div><div class="sm:col-span-2"><button class="action-btn">Save demo profile</button></div></form><div id="profile-status" class="text-sm text-teal-700 mt-4" aria-live="polite"></div>
+      </div>
+
+    </section>
+  </main>
+
+  <footer class="border-t border-emerald-100 bg-white/80">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-5 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500">
+      <span class="font-semibold text-slate-700">CivicPulse AI Hub <span class="font-normal text-slate-400">• Community-first technology</span></span>
+      <span>Wanadongri, Hingna • Nagpur, Maharashtra | Prototype — connect verified live services before deployment</span>
+    </div>
+  </footer>
+
+  <!-- Non-Blocking Toast Notification Banner -->
+  <div id="toast" class="fixed bottom-5 right-5 bg-[#142321] text-white px-5 py-3.5 rounded-xl shadow-xl text-sm font-medium flex items-center gap-3 transform translate-y-24 opacity-0 transition-all duration-300 z-50 max-w-md">
+    <i class="fa-solid fa-circle-info text-[#E07A5F] text-lg"></i>
+    <span id="toast-msg">Notification</span>
+  </div>
+
+  <script>
+    // --- STATE & WANADONGRI GIS DATA ---
+    let isOnline = false;
+    let activeCategory = 'all';
+    let selectedResourceId = 'water-tank-1';
+    let mapScale = 1;
+    let mapTranslate = { x: 0, y: 0 };
+    let isDragging = false;
+    let dragStart = { x: 0, y: 0 };
+
+    // Wanadongri (Hingna Road, Nagpur, Maharashtra) Local Resources Dataset
+    const wanadongriResources = [
+      {
+        id: 'water-tank-1',
+        name: 'Wanadongri Solar Overhead Water Tank',
+        marathiName: 'जलकुंभ (पाण्याची टाकी)',
+        category: 'water',
+        x: 345, y: 112,
+        coords: '21.0954° N, 78.9945° E',
+        status: '88% Full • Potable (TDS 142 ppm)',
+        statusBadge: 'ACTIVE SUPPLY',
+        statusColor: 'bg-sky-100 text-sky-800',
+        distance: '120m from Gram Panchayat',
+        details: '50,000L elevated community storage fed by solar submersible pump. Morning supply window: 06:30 AM – 09:30 AM.',
+        icon: 'fa-tower-observation',
+        pinColor: '#0284C7'
+      },
+      {
+        id: 'water-ro-2',
+        name: 'Gram Panchayat RO Water ATM',
+        marathiName: 'शुद्ध पाणी एटीएम केंद्र',
+        category: 'water',
+        x: 312, y: 185,
+        coords: '21.0942° N, 78.9936° E',
+        status: 'Online • ₹5 / 20L Can • TDS 68 ppm',
+        statusBadge: '24x7 DRINKING WATER',
+        statusColor: 'bg-sky-100 text-sky-800',
+        distance: '45m from Main Chowk',
+        details: 'UV + RO filtered drinking water dispensing unit powered by village battery bank. Zero turbidity detected.',
+        icon: 'fa-faucet-drip',
+        pinColor: '#0284C7'
+      },
+      {
+        id: 'water-dam-3',
+        name: 'Vena Tributary Percolation Check Dam',
+        marathiName: 'वेणा नाला बंधारा',
+        category: 'water',
+        x: 565, y: 190,
+        coords: '21.0931° N, 78.9992° E',
+        status: '78% Capacity • Groundwater Recharge High',
+        statusBadge: 'IRRIGATION RESERVOIR',
+        statusColor: 'bg-sky-100 text-sky-800',
+        distance: '680m East off Hingna Rd',
+        details: 'Rainwater harvesting check dam recharging 18 surrounding farm wells and supporting drip irrigation pipelines.',
+        icon: 'fa-water',
+        pinColor: '#0369A1'
+      },
+      {
+        id: 'water-well-4',
+        name: 'South Ward Handpump & Borewell #2',
+        marathiName: 'दक्षिण प्रभाग बोअरवेल',
+        category: 'water',
+        x: 245, y: 295,
+        coords: '21.0918° N, 78.9918° E',
+        status: 'Operational • Water Table at 42 ft',
+        statusBadge: 'COMMUNITY BOREWELL',
+        statusColor: 'bg-sky-100 text-sky-800',
+        distance: '310m South of Hingna Rd',
+        details: 'Deep aquifer borewell equipped with IoT ultrasonic depth sensor. Safe for domestic & livestock usage.',
+        icon: 'fa-droplet',
+        pinColor: '#0284C7'
+      },
+      {
+        id: 'health-phc-1',
+        name: 'Primary Health Sub-Centre & ASHA Kendra',
+        marathiName: 'प्राथमिक आरोग्य उपकेंद्र',
+        category: 'health',
+        x: 382, y: 175,
+        coords: '21.0946° N, 78.9955° E',
+        status: 'Open • 2 ASHA Workers & ORS/Rapid Kits Ready',
+        statusBadge: 'MEDICAL CARE',
+        statusColor: 'bg-rose-100 text-rose-800',
+        distance: '180m from Panchayat Bhavan',
+        details: 'Equipped with CivicPulse offline medical triage tablet, malaria/dengue rapid test kits, maternal care & cold-chain vaccines.',
+        icon: 'fa-kit-medical',
+        pinColor: '#E11D48'
+      },
+      {
+        id: 'health-amb-2',
+        name: 'Hingna Road Emergency 108 Ambulance Point',
+        marathiName: '१०८ रुग्णवाहिका थांबा',
+        category: 'health',
+        x: 430, y: 210,
+        coords: '21.0938° N, 78.9968° E',
+        status: 'Standby • 12 min to Hingna Rural Hospital',
+        statusBadge: 'EMERGENCY TRANSIT',
+        statusColor: 'bg-rose-100 text-rose-800',
+        distance: 'On Hingna-Nagpur Main Rd',
+        details: 'Designated highway pickup junction connecting Wanadongri to Hingna Rural Hospital & AIIMS Nagpur.',
+        icon: 'fa-truck-medical',
+        pinColor: '#BE123C'
+      },
+      {
+        id: 'edu-school-1',
+        name: 'Z.P. Primary School & CivicPulse Edge Kiosk',
+        marathiName: 'जिल्हा परिषद शाळा आणि AI केंद्र',
+        category: 'edu',
+        x: 278, y: 162,
+        coords: '21.0949° N, 78.9927° E',
+        status: 'Active • Offline Wi-Fi Hotspot (150m Range)',
+        statusBadge: 'EDUCATION & EDGE HUB',
+        statusColor: 'bg-amber-100 text-amber-800',
+        distance: '90m West of Chowk',
+        details: 'Hosts the Raspberry Pi 5 CivicPulse server, Marathi STEM digital library, and free local mesh Wi-Fi for students.',
+        icon: 'fa-school',
+        pinColor: '#D97706'
+      },
+      {
+        id: 'edu-anganwadi-2',
+        name: 'Wanadongri Anganwadi & Nutrition Centre',
+        marathiName: 'अंगणवाडी व पोषण केंद्र',
+        category: 'edu',
+        x: 425, y: 95,
+        coords: '21.0962° N, 78.9964° E',
+        status: 'Open • Child Growth & Nutrition Tracking',
+        statusBadge: 'CHILD WELFARE',
+        statusColor: 'bg-amber-100 text-amber-800',
+        distance: '260m North-East',
+        details: 'Early childhood learning centre utilizing offline voice storytelling and digital malnutrition screening.',
+        icon: 'fa-children',
+        pinColor: '#B45309'
+      },
+      {
+        id: 'agri-lora-1',
+        name: 'LoRaWAN Soil & Weather Telemetry Gateway',
+        marathiName: 'हवामान व माती सेन्सर टॉवर',
+        category: 'agri',
+        x: 505, y: 295,
+        coords: '21.0912° N, 78.9981° E',
+        status: 'Online • 4 Farm Nodes Connected (915MHz)',
+        statusBadge: 'AGRI TELEMETRY',
+        statusColor: 'bg-emerald-100 text-emerald-800',
+        distance: '480m South-East Farms',
+        details: 'Long-range radio tower collecting real-time black cotton soil moisture, temperature, and rainfall data across 120 acres.',
+        icon: 'fa-tower-broadcast',
+        pinColor: '#059669'
+      },
+      {
+        id: 'agri-solar-2',
+        name: 'Community Solar Microgrid & Cold Storage',
+        marathiName: 'सौर ऊर्जा व शीतगृह',
+        category: 'agri',
+        x: 655, y: 280,
+        coords: '21.0916° N, 79.0012° E',
+        status: 'Generating 14.8 kW • Battery 96%',
+        statusBadge: 'CLEAN POWER',
+        statusColor: 'bg-emerald-100 text-emerald-800',
+        distance: '820m East Orchard Zone',
+        details: '15kW solar microgrid powering farm drip pumps and a 5-ton micro cold-storage unit for Nagpur oranges & vegetables.',
+        icon: 'fa-solar-panel',
+        pinColor: '#047857'
+      }
+    ];
+
+    const syncQueue = [
+      { id: 'PKT-901', type: 'WATER_SENSOR', summary: 'Wanadongri Tank TDS 142ppm (OK)', time: '10:12 AM' },
+      { id: 'PKT-902', type: 'TRIAGE_REF', summary: 'Ward-2 Vector Fever -> Hingna PHC', time: '10:28 AM' },
+      { id: 'PKT-903', type: 'LORA_SOIL', summary: 'Kharif Sector B Moisture 24%', time: '10:41 AM' }
+    ];
+
+    // --- INITIALIZATION ---
+    window.addEventListener('DOMContentLoaded', () => {
+      renderMapMarkers();
+      renderResourceDirectory();
+      selectResource(selectedResourceId);
+      renderSyncQueue();
+      setupMapPanZoom();
+      calculateBMI();
+      renderComplaints();
+      renderAdminDashboard();
+      loadDemoProfile();
+    });
+
+    // --- MAP RENDERING & INTERACTION ---
+    function renderMapMarkers() {
+      const layer = document.getElementById('map-markers-layer');
+      layer.innerHTML = '';
+
+      const filtered = activeCategory === 'all'
+        ? wanadongriResources
+        : wanadongriResources.filter(r => r.category === activeCategory);
+
+      filtered.forEach(res => {
+        const isSelected = res.id === selectedResourceId;
+        const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        g.setAttribute('class', `map-pin ${isSelected ? 'active-pin' : ''}`);
+        g.setAttribute('transform', `translate(${res.x}, ${res.y})`);
+        g.onclick = (e) => {
+          e.stopPropagation();
+          selectResource(res.id);
+        };
+
+        // Pulse highlight ring if selected
+        if (isSelected) {
+          const ring = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+          ring.setAttribute('cx', '0');
+          ring.setAttribute('cy', '-14');
+          ring.setAttribute('r', '22');
+          ring.setAttribute('fill', res.pinColor);
+          ring.setAttribute('fill-opacity', '0.22');
+          ring.setAttribute('stroke', res.pinColor);
+          ring.setAttribute('stroke-width', '2');
+          g.appendChild(ring);
+        }
+
+        // Pin Drop Shape
+        const pinPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        pinPath.setAttribute('d', 'M 0,0 C -10,-12 -15,-18 -15,-25 A 15,15 0 1,1 15,-25 C 15,-18 10,-12 0,0 Z');
+        pinPath.setAttribute('fill', res.pinColor);
+        pinPath.setAttribute('stroke', '#FFFFFF');
+        pinPath.setAttribute('stroke-width', isSelected ? '3' : '2');
+        g.appendChild(pinPath);
+
+        // Inner white dot
+        const innerDot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        innerDot.setAttribute('cx', '0');
+        innerDot.setAttribute('cy', '-25');
+        innerDot.setAttribute('r', '5.5');
+        innerDot.setAttribute('fill', '#FFFFFF');
+        g.appendChild(innerDot);
+
+        // Short Label Pill below pin
+        const labelBg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        const shortTitle = res.name.split(' ').slice(0, 3).join(' ');
+        const textWidth = shortTitle.length * 5.6 + 12;
+        labelBg.setAttribute('x', -textWidth / 2);
+        labelBg.setAttribute('y', '4');
+        labelBg.setAttribute('width', textWidth);
+        labelBg.setAttribute('height', '16');
+        labelBg.setAttribute('rx', '4');
+        labelBg.setAttribute('fill', isSelected ? '#142321' : 'rgba(255,255,255,0.92)');
+        labelBg.setAttribute('stroke', isSelected ? '#142321' : '#CBD5E1');
+        labelBg.setAttribute('stroke-width', '1');
+        g.appendChild(labelBg);
+
+        const labelText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        labelText.setAttribute('x', '0');
+        labelText.setAttribute('y', '14.5');
+        labelText.setAttribute('text-anchor', 'middle');
+        labelText.setAttribute('font-family', 'DM Sans, sans-serif');
+        labelText.setAttribute('font-size', '9.5');
+        labelText.setAttribute('font-weight', '700');
+        labelText.setAttribute('fill', isSelected ? '#FFFFFF' : '#142321');
+        labelText.textContent = shortTitle;
+        g.appendChild(labelText);
+
+        layer.appendChild(g);
+      });
+    }
+
+    function selectResource(id) {
+      selectedResourceId = id;
+      const res = wanadongriResources.find(r => r.id === id);
+      if (!res) return;
+
+      renderMapMarkers();
+      renderResourceDirectory();
+
+      const inspector = document.getElementById('resource-inspector');
+      inspector.innerHTML = `
+        <div class="flex flex-wrap items-start justify-between gap-3">
+          <div class="flex items-start gap-3.5">
+            <div class="w-11 h-11 rounded-xl text-white flex items-center justify-center text-lg shrink-0 shadow-xs" style="background-color: ${res.pinColor}">
+              <i class="fa-solid ${res.icon}"></i>
+            </div>
+            <div>
+              <div class="flex flex-wrap items-center gap-2">
+                <h3 class="font-extrabold text-base sm:text-lg text-[#142321]">${res.name}</h3>
+                <span class="text-[11px] font-mono-code font-bold px-2 py-0.5 rounded ${res.statusColor}">${res.statusBadge}</span>
+              </div>
+              <p class="text-xs font-medium text-[#0D6E6E] mt-0.5">${res.marathiName} • <span class="font-mono-code text-slate-600">${res.coords}</span> • ${res.distance}</p>
+            </div>
+          </div>
+          <button onclick="logFieldCheck('${res.id}')" class="bg-[#142321] hover:bg-slate-800 text-white text-xs font-bold px-3.5 py-2 rounded-xl flex items-center gap-1.5 transition cursor-pointer shrink-0">
+            <i class="fa-solid fa-clipboard-check text-[#E07A5F]"></i>
+            <span>Log Status to Mesh</span>
+          </button>
+        </div>
+        <div class="mt-3 pt-3 border-t border-teal-200/70 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs sm:text-sm">
+          <p class="text-slate-700">${res.details}</p>
+          <span class="font-mono-code text-xs font-bold text-[#142321] bg-white px-3 py-1.5 rounded-lg border border-teal-100 shrink-0">
+            ${res.status}
+          </span>
+        </div>
+      `;
+    }
+
+    function renderResourceDirectory() {
+      const dir = document.getElementById('resource-directory');
+      const filtered = activeCategory === 'all'
+        ? wanadongriResources
+        : wanadongriResources.filter(r => r.category === activeCategory);
+
+      document.getElementById('visible-count-label').textContent = `Showing ${filtered.length} location${filtered.length === 1 ? '' : 's'}`;
+
+      dir.innerHTML = filtered.map(res => {
+        const isSelected = res.id === selectedResourceId;
+        return `
+          <button onclick="selectResource('${res.id}')" class="text-left p-2.5 rounded-xl border transition flex items-center gap-3 cursor-pointer ${isSelected ? 'bg-[#EFF5F4] border-[#0D6E6E] ring-1 ring-[#0D6E6E]' : 'bg-white border-slate-200 hover:bg-slate-50'}">
+            <span class="w-8 h-8 rounded-lg text-white flex items-center justify-center text-xs shrink-0" style="background-color: ${res.pinColor}">
+              <i class="fa-solid ${res.icon}"></i>
+            </span>
+            <div class="min-w-0 flex-grow">
+              <div class="font-bold text-xs text-[#142321] truncate">${res.name}</div>
+              <div class="text-[11px] text-slate-500 truncate">${res.status}</div>
+            </div>
+          </button>
+        `;
+      }).join('');
+    }
+
+    function filterMapCategory(category) {
+      activeCategory = category;
+
+      // Update filter button styles
+      document.querySelectorAll('.map-filter-btn').forEach(btn => {
+        btn.classList.remove('ring-2', 'ring-offset-1', 'ring-[#142321]');
+      });
+      const activeBtn = document.getElementById(`filter-${category}`);
+      if (activeBtn) activeBtn.classList.add('ring-2', 'ring-offset-1', 'ring-[#142321]');
+
+      // Auto-select first matching item if current selection is hidden
+      const filtered = category === 'all'
+        ? wanadongriResources
+        : wanadongriResources.filter(r => r.category === category);
+      if (filtered.length > 0 && !filtered.some(r => r.id === selectedResourceId)) {
+        selectResource(filtered[0].id);
+      } else {
+        renderMapMarkers();
+        renderResourceDirectory();
+      }
+    }
+
+    function logFieldCheck(resourceId) {
+      const res = wanadongriResources.find(r => r.id === resourceId);
+      if (!res) return;
+      addToSyncQueue('GIS_CHECK', `${res.name.slice(0, 22)}... Verified`);
+      showToast(`Logged offline field verification for ${res.name} to SQLite queue.`);
+    }
+
+    // --- RELIABLE SVG PAN & ZOOM (mouse, touch and pen) ---
+    let mapPointerStart = null;
+    let mapDragMoved = false;
+    let suppressMapClickUntil = 0;
+
+    function clientToMapPoint(svg, clientX, clientY) {
+      const point = svg.createSVGPoint();
+      point.x = clientX;
+      point.y = clientY;
+      const matrix = svg.getScreenCTM();
+      return matrix ? point.matrixTransform(matrix.inverse()) : { x: 0, y: 0 };
+    }
+
+    function updateMapTransform() {
+      const viewport = document.getElementById('map-viewport');
+      if (!viewport) return;
+      // Keep translation in SVG viewBox units so dragging behaves consistently at every screen size.
+      viewport.setAttribute('transform',
+        `translate(${mapTranslate.x} ${mapTranslate.y}) scale(${mapScale})`);
+    }
+
+    function zoomMap(delta) {
+      const nextScale = Math.min(3, Math.max(0.8, +(mapScale + delta).toFixed(2)));
+      if (nextScale === mapScale) return;
+      // Zoom around the centre of the map instead of shifting the drawing away.
+      const cx = 400, cy = 240;
+      const ratio = nextScale / mapScale;
+      mapTranslate.x = cx - ratio * (cx - mapTranslate.x);
+      mapTranslate.y = cy - ratio * (cy - mapTranslate.y);
+      mapScale = nextScale;
+      updateMapTransform();
+    }
+
+    function resetMapView() {
+      mapScale = 1;
+      mapTranslate = { x: 0, y: 0 };
+      updateMapTransform();
+    }
+
+    function setupMapPanZoom() {
+      const svg = document.getElementById('wanadongri-svg');
+      if (!svg || svg.dataset.panZoomReady) return;
+      svg.dataset.panZoomReady = 'true';
+      svg.style.touchAction = 'none';
+
+      svg.addEventListener('pointerdown', (e) => {
+        // Do not start a pan from an interactive resource pin.
+        if (e.target.closest && e.target.closest('.map-pin')) return;
+        if (e.button !== undefined && e.button !== 0) return;
+        const point = clientToMapPoint(svg, e.clientX, e.clientY);
+        mapPointerStart = {
+          pointerId: e.pointerId,
+          x: point.x, y: point.y,
+          translateX: mapTranslate.x, translateY: mapTranslate.y,
+          clientX: e.clientX, clientY: e.clientY
+        };
+        mapDragMoved = false;
+        svg.setPointerCapture(e.pointerId);
+      });
+
+      svg.addEventListener('pointermove', (e) => {
+        if (!mapPointerStart || e.pointerId !== mapPointerStart.pointerId) return;
+        const point = clientToMapPoint(svg, e.clientX, e.clientY);
+        const dx = point.x - mapPointerStart.x;
+        const dy = point.y - mapPointerStart.y;
+        if (Math.hypot(e.clientX - mapPointerStart.clientX,
+                       e.clientY - mapPointerStart.clientY) > 4) mapDragMoved = true;
+        if (!mapDragMoved) return;
+        mapTranslate.x = mapPointerStart.translateX + dx;
+        mapTranslate.y = mapPointerStart.translateY + dy;
+        updateMapTransform();
+      });
+
+      const finishPan = (e) => {
+        if (!mapPointerStart || e.pointerId !== mapPointerStart.pointerId) return;
+        if (mapDragMoved) suppressMapClickUntil = Date.now() + 250;
+        mapPointerStart = null;
+        isDragging = false;
+      };
+      svg.addEventListener('pointerup', finishPan);
+      svg.addEventListener('pointercancel', finishPan);
+      svg.addEventListener('lostpointercapture', () => { mapPointerStart = null; });
+      svg.addEventListener('click', (e) => {
+        if (Date.now() < suppressMapClickUntil) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+      }, true);
+
+      // Trackpad/mouse-wheel zoom, with browser page scrolling preserved outside the map.
+      svg.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        zoomMap(e.deltaY < 0 ? 0.1 : -0.1);
+      }, { passive: false });
+    }
+
+    // --- TAB NAVIGATION ---
+    function switchTab(tabName) {
+      const tabs = ['map','health','edu','climate','citizen','schemes','agriculture','weather','emergency','assistant','admin','account'];
+      tabs.forEach(t => {
+        const panel = document.getElementById(`panel-${t}`);
+        const btn = document.getElementById(`tab-${t}`);
+        if (!panel || !btn) return;
+        if (t === tabName) {
+          panel.classList.remove('hidden'); panel.classList.add('flex');
+          btn.classList.add('border-2','border-[#0D6E6E]','bg-[#EFF5F4]');
+          btn.classList.remove('border','border-slate-200');
+        } else {
+          panel.classList.add('hidden'); panel.classList.remove('flex');
+          btn.classList.remove('border-2','border-[#0D6E6E]','bg-[#EFF5F4]');
+          btn.classList.add('border','border-slate-200');
+        }
+      });
+      if (tabName === 'admin') renderAdminDashboard();
+      if (tabName === 'citizen') renderComplaints();
+    }
+
+    // --- SIMULATED WHISPER VOICE QUERY ---
+    function simulateVoiceQuery(type) {
+      const dialect = document.getElementById('dialect-select').value;
+      if (type === 'water') {
+        switchTab('map');
+        filterMapCategory('water');
+        selectResource('water-ro-2');
+        const msg = dialect === 'mr'
+          ? 'Whisper Marathi: "वाणाडोंगरीत पिण्याचे शुद्ध पाणी कुठे आहे?" → Highlighted Gram Panchayat RO Water ATM (TDS 68 ppm).'
+          : 'Voice Query: "Where is clean drinking water in Wanadongri?" → Highlighted Gram Panchayat RO Water ATM.';
+        showToast(msg);
+      } else if (type === 'bmi') {
+        switchTab('health');
+        calculateBMI();
+        const bmiCard = document.getElementById('bmi-triage-card');
+        if (bmiCard) bmiCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        const msg = dialect === 'mr'
+          ? 'Whisper Marathi: "BMI आणि पोषण तपासणी सुरू केली आहे" → Opened Offline BMI & Anganwadi Nutrition Triage.'
+          : 'Voice Query: "Check BMI & Nutrition" → Opened Offline BMI & Anganwadi Nutrition Triage.';
+        showToast(msg);
+      } else {
+        switchTab('health');
+        const symptomText = dialect === 'mr'
+          ? 'तीन दिवसांपासून तीव्र ताप, डोकेदुखी आणि अंगदुखी (Transcribed locally via Whisper-Small Marathi).'
+          : 'High fever for 3 days, severe headache, and body ache (Transcribed locally via Whisper-Small).';
+        document.getElementById('patient-symptoms').value = symptomText;
+        runHealthTriage();
+        showToast('Offline dialect speech transcribed & triaged on-device.');
+      }
+    }
+
+    // --- OFFLINE BMI & NUTRITION TRIAGE LOGIC (ASIAN-INDIAN WHO/ICMR CUTOFFS) ---
+    let latestBmiRecord = null;
+
+    function setBmiPreset(age, gender, weight, height) {
+      document.getElementById('bmi-age').value = age;
+      document.getElementById('bmi-gender').value = gender;
+      document.getElementById('bmi-weight').value = weight;
+      document.getElementById('bmi-height').value = height;
+      calculateBMI();
+    }
+
+    function calculateBMI() {
+      const age = parseInt(document.getElementById('bmi-age').value, 10) || 25;
+      const gender = document.getElementById('bmi-gender').value || 'Female';
+      const weight = parseFloat(document.getElementById('bmi-weight').value);
+      const heightCm = parseFloat(document.getElementById('bmi-height').value);
+
+      if (!weight || !heightCm || weight <= 0 || heightCm <= 0) return;
+
+      const heightM = heightCm / 100;
+      const bmi = +(weight / (heightM * heightM)).toFixed(1);
+
+      // Asian-Indian WHO/ICMR Healthy Weight Range (18.5 to 22.9 kg/m²)
+      const minHealthyKg = (18.5 * heightM * heightM).toFixed(1);
+      const maxHealthyKg = (22.9 * heightM * heightM).toFixed(1);
+
+      let category = 'NORMAL (ASIAN-INDIAN)';
+      let badgeClass = 'bg-emerald-100 text-emerald-800';
+      let scoreColor = 'text-[#0D6E6E]';
+      let borderColor = 'border-[#0D6E6E]';
+      let guidanceHtml = '';
+
+      if (bmi < 18.5) {
+        category = 'UNDERWEIGHT (< 18.5)';
+        badgeClass = 'bg-sky-100 text-sky-800';
+        scoreColor = 'text-sky-700';
+        borderColor = 'border-sky-600';
+        guidanceHtml = `
+          <p class="font-bold text-[#142321]">Malnutrition / Chronic Energy Deficiency Alert (BMI ${bmi}):</p>
+          <ul class="list-disc pl-5 space-y-1">
+            <li>Enroll at <strong>Wanadongri Anganwadi & Nutrition Centre</strong> (260m NE) for Take-Home Ration (THR) protein & millet packets.</li>
+            <li>Screen for anemia (Hemoglobin dipstick) at Primary Health Sub-Centre; start Iron-Folic Acid (IFA) supplementation.</li>
+            <li>Add locally available groundnuts, jaggery (gul), soyabean, and sprouted pulses to daily meals.</li>
+          </ul>
+        `;
+      } else if (bmi >= 18.5 && bmi <= 22.9) {
+        category = 'NORMAL (18.5 – 22.9)';
+        badgeClass = 'bg-emerald-100 text-emerald-800';
+        scoreColor = 'text-[#0D6E6E]';
+        borderColor = 'border-[#0D6E6E]';
+        guidanceHtml = `
+          <p class="font-bold text-[#142321]">Healthy Asian-Indian Metabolic Range (BMI ${bmi}):</p>
+          <ul class="list-disc pl-5 space-y-1">
+            <li>Maintain balanced Vidarbha staple diet (Jowar/Bajra bhakri, dal, seasonal leafy vegetables, and clean RO ATM water).</li>
+            <li>Continue routine annual blood pressure & hemoglobin checkup at Wanadongri ASHA Kendra.</li>
+          </ul>
+        `;
+      } else if (bmi >= 23.0 && bmi <= 24.9) {
+        category = 'OVERWEIGHT / AT-RISK (23.0 – 24.9)';
+        badgeClass = 'bg-amber-100 text-amber-800';
+        scoreColor = 'text-amber-700';
+        borderColor = 'border-amber-500';
+        guidanceHtml = `
+          <p class="font-bold text-[#142321]">Early Metabolic Risk Threshold (Asian-Indian Cutoff ≥ 23.0):</p>
+          <ul class="list-disc pl-5 space-y-1">
+            <li>South Asians develop insulin resistance at lower BMI; schedule fasting blood glucose check at <strong>Wanadongri Sub-Centre</strong>.</li>
+            <li>Replace refined sugar/fried snacks with whole millets (Jowar/Nachni) and 30 mins daily brisk walking.</li>
+          </ul>
+        `;
+      } else {
+        category = 'OBESE / HIGH METABOLIC RISK (≥ 25.0)';
+        badgeClass = 'bg-rose-100 text-rose-800';
+        scoreColor = 'text-rose-700';
+        borderColor = 'border-rose-600';
+        guidanceHtml = `
+          <p class="font-bold text-[#142321]">High Non-Communicable Disease (NCD) Risk (BMI ${bmi}):</p>
+          <ul class="list-disc pl-5 space-y-1">
+            <li>Priority NPCDCS screening for Hypertension & Type-2 Diabetes at <strong>Wanadongri Primary Health Sub-Centre</strong>.</li>
+            <li>Reduce edible oil & salt intake; queue anonymized NCD counseling follow-up for Hingna Rural Hospital physician review.</li>
+          </ul>
+        `;
+      }
+
+      // Map BMI (14 to 32) onto 4% to 96% visual gauge track
+      const clampedBmi = Math.min(32, Math.max(14, bmi));
+      let gaugePercent = 50;
+      if (clampedBmi < 18.5) {
+        gaugePercent = ((clampedBmi - 14) / (18.5 - 14)) * 28;
+      } else if (clampedBmi <= 22.9) {
+        gaugePercent = 28 + ((clampedBmi - 18.5) / (22.9 - 18.5)) * 24;
+      } else if (clampedBmi < 25.0) {
+        gaugePercent = 52 + ((clampedBmi - 23.0) / (25.0 - 23.0)) * 16;
+      } else {
+        gaugePercent = 68 + ((clampedBmi - 25.0) / (32.0 - 25.0)) * 32;
+      }
+
+      const scoreEl = document.getElementById('bmi-score');
+      scoreEl.textContent = bmi.toFixed(1);
+      scoreEl.className = `text-3xl sm:text-4xl font-extrabold font-mono-code ${scoreColor}`;
+
+      const badgeEl = document.getElementById('bmi-category-badge');
+      badgeEl.textContent = category;
+      badgeEl.className = `text-xs font-mono-code font-bold px-2.5 py-0.5 rounded ${badgeClass}`;
+
+      document.getElementById('bmi-healthy-range').innerHTML =
+        `Healthy Weight for ${heightCm} cm: <strong>${minHealthyKg} – ${maxHealthyKg} kg</strong>`;
+
+      document.getElementById('bmi-gauge-marker').style.left = `${Math.min(96, Math.max(4, gaugePercent)).toFixed(1)}%`;
+
+      const guidanceEl = document.getElementById('bmi-guidance');
+      guidanceEl.className = `bg-[#EFF5F4] border-l-4 ${borderColor} rounded-r-lg p-3.5 text-xs sm:text-sm text-slate-700 space-y-1`;
+      guidanceEl.innerHTML = guidanceHtml;
+
+      latestBmiRecord = {
+        age,
+        gender,
+        weight,
+        heightCm,
+        bmi: bmi.toFixed(1),
+        category: category.split(' (')[0]
+      };
+    }
+
+    function logBmiScreening() {
+      if (!latestBmiRecord) calculateBMI();
+      const r = latestBmiRecord;
+      addToSyncQueue('BMI_SCREEN', `${r.age}y/${r.gender[0]} BMI ${r.bmi} (${r.category})`);
+      showToast(`Encrypted BMI screening (${r.bmi} — ${r.category}) queued in local SQLite.`);
+    }
+
+    // --- HEALTH TRIAGE LOGIC ---
+    function setSymptomPreset(text) {
+      document.getElementById('patient-symptoms').value = text;
+    }
+
+    function runHealthTriage() {
+      const symptoms = document.getElementById('patient-symptoms').value.toLowerCase();
+      const resultBox = document.getElementById('triage-result');
+      let priority = 'MODERATE';
+      let condition = 'General viral syndrome / fatigue.';
+      let actions = [
+        'Monitor body temperature every 4 hours at Wanadongri Sub-Centre.',
+        'Maintain hydration using clean water from Gram Panchayat RO ATM.',
+        'Encrypted case summary added to SQLite mesh sync queue.'
+      ];
+
+      if (symptoms.includes('cough') || symptoms.includes('breath') || symptoms.includes('chest')) {
+        priority = 'HIGH ALERT';
+        condition = 'Acute lower respiratory tract infection / TB screening protocol.';
+        actions = [
+          'Check pulse oximetry immediately; refer via 108 Ambulance Point on Hingna Rd if SpO2 < 94%.',
+          'Collect sputum sample for Hingna Rural Hospital microscopy.',
+          'Flagged for priority doctor tele-review upon mesh sync.'
+        ];
+      } else if (symptoms.includes('diarrhea') || symptoms.includes('vomiting') || symptoms.includes('child')) {
+        priority = 'URGENT PEDIATRIC';
+        condition = 'Acute gastroenteritis with moderate dehydration risk.';
+        actions = [
+          'Start Zinc + low-osmolarity ORS therapy immediately from ASHA Kendra Kit.',
+          'Advise boiling or using RO ATM water (TDS 68 ppm) for all infant feeds.',
+          'Schedule 6-hour ASHA worker follow-up visit.'
+        ];
+      } else if (symptoms.includes('fever') || symptoms.includes('ताप')) {
+        priority = 'MODERATE-HIGH';
+        condition = 'Vector-borne viral fever (Dengue/Malaria screening advised).';
+        actions = [
+          'Administer Oral Rehydration Salts (ORS) from Wanadongri ASHA Kendra (180m away).',
+          'Perform rapid antigen dipstick test available in Sub-Centre Kit #2.',
+          'Queued encrypted referral packet for Hingna Rural Hospital review.'
+        ];
+      }
+
+      resultBox.innerHTML = `
+        <div class="flex items-center justify-between mb-2">
+          <span class="font-bold text-[#0D6E6E] text-sm uppercase font-mono-code">AI Assessment Updated (138ms)</span>
+          <span class="text-xs font-mono-code bg-[#E07A5F] text-white px-2.5 py-0.5 rounded font-bold">PRIORITY: ${priority}</span>
+        </div>
+        <p class="text-sm text-[#142321] font-medium mb-2"><strong>Suspected Condition:</strong> ${condition}</p>
+        <ul class="text-sm text-slate-700 list-disc pl-5 space-y-1">
+          ${actions.map(a => `<li>${a}</li>`).join('')}
+        </ul>
+      `;
+
+      addToSyncQueue('TRIAGE_REF', `Triage (${priority}) logged`);
+      showToast('Offline medical triage completed & encrypted in SQLite.');
+    }
+
+    // --- TUTOR LOGIC ---
+    function setTutorPreset(q) {
+      document.getElementById('tutor-question').value = q;
+      askTutor();
+    }
+
+    function askTutor() {
+      const q = document.getElementById('tutor-question').value.toLowerCase();
+      const ans = document.getElementById('tutor-answer');
+
+      if (q.includes('soil') || q.includes('cotton') || q.includes('rotation')) {
+        ans.innerHTML = `<strong>Black Cotton Soil (Regur) & Crop Rotation:</strong> Vidarbha's black soil retains moisture well, but planting cotton every year depletes nitrogen. Rotating with legumes like <em>Tur (Pigeon Pea)</em> or <em>Soybean</em> fixes atmospheric nitrogen back into the soil through root nodules—boosting next season's yield naturally!`;
+      } else if (q.includes('ro') || q.includes('water') || q.includes('purify')) {
+        ans.innerHTML = `<strong>Reverse Osmosis (RO) Purification:</strong> Borewell water around Wanadongri can have higher dissolved minerals (TDS). The Panchayat RO ATM uses high pressure to push water through a semi-permeable membrane with microscopic pores (0.0001 microns), blocking excess salts and bacteria to deliver safe 68 ppm drinking water.`;
+      } else {
+        ans.innerHTML = `<strong>Solar Photovoltaic Effect:</strong> Sunlight carries tiny energy packets called photons. When they hit silicon cells on Wanadongri's roof panels, they knock electrons loose, creating Direct Current (DC) electricity. An inverter converts this into Alternating Current (AC) to power lights, water pumps, and this CivicPulse hub!`;
+      }
+      showToast('Offline curriculum response generated locally.');
+    }
+
+    // --- CLIMATE & MESH SYNC LOGIC ---
+    function dispatchSmsAlert() {
+      addToSyncQueue('LORA_ALERT', 'Drip irrigation alert sent to 42 farmers');
+      showToast('Broadcasted local Marathi irrigation alert via 915MHz LoRaWAN mesh.');
+    }
+
+    function toggleNetwork() {
+      isOnline = !isOnline;
+      const btn = document.getElementById('network-toggle');
+      const dot = document.getElementById('network-dot');
+      const label = document.getElementById('network-label');
+
+      if (isOnline) {
+        btn.className = 'flex items-center gap-2 px-3 py-1.5 rounded-lg font-mono-code text-xs font-bold transition cursor-pointer bg-emerald-500/20 text-emerald-300 border border-emerald-500/40';
+        dot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-400';
+        label.textContent = 'MESH UPLINK ONLINE';
+        showToast('Intermittent cellular/mesh uplink detected! Ready to sync.');
+      } else {
+        btn.className = 'flex items-center gap-2 px-3 py-1.5 rounded-lg font-mono-code text-xs font-bold transition cursor-pointer bg-amber-500/20 text-amber-300 border border-amber-500/40';
+        dot.className = 'w-2.5 h-2.5 rounded-full bg-amber-400 pulse-dot';
+        label.textContent = 'OFFLINE (EDGE MODE)';
+        showToast('Switched to 100% Offline Edge Mode.');
+      }
+    }
+
+    function addToSyncQueue(type, summary) {
+      const id = 'PKT-' + Math.floor(904 + Math.random() * 90);
+      const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      syncQueue.unshift({ id, type, summary, time: now });
+      renderSyncQueue();
+    }
+
+    function renderSyncQueue() {
+      const list = document.getElementById('sync-log');
+      document.getElementById('queue-count').textContent = syncQueue.length;
+      if (syncQueue.length === 0) {
+        list.innerHTML = `<li class="text-emerald-700 bg-emerald-50 p-2 rounded-lg">✓ All local SQLite packets synced with Nagpur District Cloud.</li>`;
+        return;
+      }
+      list.innerHTML = syncQueue.map(item => `
+        <li class="bg-slate-50 border border-slate-200 p-2 rounded-lg flex justify-between items-start gap-2">
+          <div>
+            <span class="font-bold text-[#0D6E6E]">[${item.id}]</span> ${item.summary}
+          </div>
+          <span class="text-[10px] text-slate-400 shrink-0">${item.time}</span>
+        </li>
+      `).join('');
+    }
+
+    function syncNow() {
+      if (!isOnline) {
+        showToast('Cannot reach cloud while OFFLINE. Toggle "OFFLINE (EDGE MODE)" to simulate uplink.');
+        return;
+      }
+      if (syncQueue.length === 0) {
+        showToast('SQLite queue is already up to date.');
+        return;
+      }
+      const icon = document.getElementById('sync-icon');
+      icon.classList.add('fa-spin');
+      setTimeout(() => {
+        const count = syncQueue.length;
+        syncQueue.length = 0;
+        renderSyncQueue();
+        icon.classList.remove('fa-spin');
+        showToast(`Successfully synced ${count} encrypted packets to Nagpur District Cloud!`);
+      }, 700);
+    }
+
+    function checkTutorQuiz(answer){const out=document.getElementById('tutor-quiz-result');if(answer==='inverter'){out.textContent='Correct! An inverter converts DC electricity from solar panels into AC electricity.';out.className='text-sm mt-3 text-emerald-700 font-bold';}else{out.textContent='Not quite. Think about the device that changes DC power into AC power.';out.className='text-sm mt-3 text-amber-800 font-bold';}}
+    function startVoiceInput(targetId){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){showToast('Voice input is not supported in this browser. Try a recent Chrome or Edge version.');return;}const rec=new SR(),dialect=document.getElementById('dialect-select')?.value||'en';rec.lang=dialect==='mr'?'mr-IN':dialect==='hi'?'hi-IN':'en-IN';rec.interimResults=false;rec.maxAlternatives=1;showToast('Listening… please speak now.');rec.onresult=e=>{document.getElementById(targetId).value=e.results[0][0].transcript;};rec.onerror=()=>showToast('Voice input could not be captured. Check microphone permission.');rec.start();}
+
+    // --- CIVICPULSE EXTENDED MODULES: local demo functionality ---
+    const complaintStoreKey = 'civicpulse_complaints_v1';
+    function getComplaints(){ try{return JSON.parse(localStorage.getItem(complaintStoreKey)||'[]')}catch(e){return []} }
+    function saveComplaints(items){ localStorage.setItem(complaintStoreKey,JSON.stringify(items)); }
+    function submitComplaint(event){
+      event.preventDefault();
+      const photo=document.getElementById('complaint-photo').files[0];
+      const item={id:'CP-'+Date.now().toString().slice(-7),category:document.getElementById('complaint-category').value,area:document.getElementById('complaint-area').value.trim(),description:document.getElementById('complaint-description').value.trim(),contact:document.getElementById('complaint-contact').value.trim(),location:document.getElementById('complaint-location').dataset.coords||'',photoName:photo?photo.name:'',status:'Submitted',created:new Date().toLocaleString()};
+      const items=getComplaints();items.unshift(item);saveComplaints(items);document.getElementById('complaint-form').reset();const loc=document.getElementById('complaint-location');loc.textContent='Location not added';delete loc.dataset.coords;renderComplaints();addToSyncQueue('CITIZEN_REPORT',`${item.id}: ${item.category} issue submitted`);showToast(`Complaint ${item.id} saved in this browser.`);
+    }
+    function renderComplaints(){
+      const items=getComplaints(),box=document.getElementById('complaint-list');if(!box)return;
+      document.getElementById('complaint-total').textContent=`${items.length} report${items.length===1?'':'s'}`;
+      box.innerHTML=items.length?items.map(x=>`<article class="metric-card"><div class="flex flex-wrap justify-between gap-2"><b>${escapeHtml(x.category)} • ${escapeHtml(x.id)}</b><span class="status-pill ${x.status==='Resolved'?'bg-emerald-100 text-emerald-800':'bg-amber-100 text-amber-800'}">${escapeHtml(x.status)}</span></div><p class="text-sm mt-2">${escapeHtml(x.description)}</p><p class="text-xs text-slate-500 mt-2">${escapeHtml(x.area)} • ${escapeHtml(x.created)}</p>${x.photoName?`<p class="text-xs text-slate-500">Attachment: ${escapeHtml(x.photoName)} (not uploaded)</p>`:''}</article>`).join(''):'<p class="text-sm text-slate-500">No complaints submitted in this browser yet.</p>';
+    }
+    function escapeHtml(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+    function useMyLocation(){const out=document.getElementById('complaint-location');if(!navigator.geolocation){out.textContent='Geolocation is not supported';return;}out.textContent='Requesting location permission…';navigator.geolocation.getCurrentPosition(pos=>{const c=`${pos.coords.latitude.toFixed(5)}, ${pos.coords.longitude.toFixed(5)}`;out.textContent=`Location added: ${c}`;out.dataset.coords=c;},()=>{out.textContent='Location unavailable / permission denied';},{enableHighAccuracy:true,timeout:8000});}
+    function renderAdminDashboard(){const a=getComplaints(),pending=a.filter(x=>x.status!=='Resolved').length,resolved=a.length-pending;document.getElementById('admin-complaints').textContent=a.length;document.getElementById('admin-pending').textContent=pending;document.getElementById('admin-resolved').textContent=resolved;const box=document.getElementById('admin-complaint-list');box.innerHTML=a.length?a.map(x=>`<div class="metric-card flex flex-wrap items-center justify-between gap-2"><div><b>${escapeHtml(x.id)} • ${escapeHtml(x.category)}</b><p class="text-xs text-slate-500">${escapeHtml(x.area)} — ${escapeHtml(x.description)}</p></div><div class="flex gap-2 items-center"><span class="status-pill bg-slate-100">${escapeHtml(x.status)}</span>${x.status!=='Resolved'?`<button class="soft-btn" onclick="resolveComplaint('${x.id}')">Mark resolved</button>`:''}</div></div>`).join(''):'No reports yet.';}
+    function resolveComplaint(id){const a=getComplaints(),x=a.find(z=>z.id===id);if(x){x.status='Resolved';x.resolvedAt=new Date().toLocaleString();saveComplaints(a);renderAdminDashboard();renderComplaints();showToast(`${id} marked resolved in local demo.`);}}
+    function exportComplaints(){const rows=getComplaints(),head=['ID','Category','Area','Description','Status','Created'];const csv=[head,...rows.map(x=>[x.id,x.category,x.area,x.description,x.status,x.created])].map(row=>row.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\n');const blob=new Blob([csv],{type:'text/csv'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='civicpulse-complaints.csv';a.click();URL.revokeObjectURL(url);}
+    function filterSchemes(){const q=document.getElementById('scheme-search').value.toLowerCase();document.querySelectorAll('.scheme-card').forEach(c=>c.classList.toggle('hidden',!c.dataset.search.includes(q)));}
+    function getFarmAdvice(){const crop=document.getElementById('crop-choice').value,moist=Number(document.getElementById('soil-moisture-input').value),stage=document.getElementById('crop-stage').value;let text='';if(!Number.isFinite(moist)||moist<0||moist>100){text='Enter a soil moisture value between 0 and 100.';}else{text=moist<25?'Moisture is low in this example. Check the sensor and field conditions; consider irrigation only after checking rainfall, soil type and crop stage.':moist<45?'Moisture is in a moderate example range. Recheck the field and sensor reading before scheduling irrigation.':'Moisture is relatively high in this example. Avoid unnecessary irrigation and check drainage.';text+=` Crop selected: ${crop}. Crop stage: ${stage}. This is general educational guidance, not an agronomic prescription.`;}document.getElementById('farm-advice').textContent=text;}
+    function previewCropPhoto(event){const f=event.target.files[0],box=document.getElementById('crop-photo-preview');box.textContent=f?`Selected: ${f.name}. No automated disease detection is connected in this prototype.`:'No photo selected.';}
+    function askCommunityAssistant(event){event.preventDefault();const input=document.getElementById('chat-question'),q=input.value.trim();if(!q)return;appendChat('You',q);input.value='';const t=q.toLowerCase();let answer='I can help with the resource map, complaints, health, learning, government schemes, agriculture, weather and emergency contacts. Try opening the matching module from the left menu.';if(/garbage|complaint|pothole|streetlight|report/.test(t))answer='Open Citizen Complaints from the menu, select the issue category, add the area and description, then submit. Your demo report is stored only in this browser.';else if(/scheme|scholarship|pm.?kisan|mahadbt/.test(t))answer='Open Government Schemes to browse selected schemes and official links. Check current eligibility and deadlines on the official portal.';else if(/farmer|crop|soil|irrigat|cotton|soybean/.test(t))answer='Open Farmer Assistance, choose your crop and enter a soil moisture reading. The suggestions are general demo guidance; consult an agriculture officer for decisions.';else if(/weather|rain|temperature|aqi|air quality/.test(t))answer='Open Weather & Air Quality. The displayed values are sample placeholders until a live weather/AQI service is connected.';else if(/ambulance|emergency|police|fire/.test(t))answer='For immediate emergencies in India, call 112. Ambulance 108 may be available in your area. Open Emergency Help for map searches.';else if(/water|borewell|ro/.test(t))answer='Open Wanadongri Resource Map and select the Water Sources filter to explore listed water points. Confirm real locations and status locally.';else if(/health|bmi|doctor/.test(t))answer='Open Rural Health Triage for the prototype screening tools. It is not a diagnosis; urgent symptoms need professional medical attention.';setTimeout(()=>appendChat('CivicPulse',answer),180);}
+    function quickAsk(q){document.getElementById('chat-question').value=q;document.getElementById('chat-question').focus();}
+    function appendChat(who,msg){const box=document.getElementById('chat-history'),el=document.createElement('div');el.className='bg-white border border-slate-100 rounded-xl p-3 text-sm';const b=document.createElement('b');b.textContent=who+': ';const span=document.createElement('span');span.textContent=msg;el.append(b,span);box.appendChild(el);box.scrollTop=box.scrollHeight;}
+    function saveDemoProfile(event){event.preventDefault();const p={name:document.getElementById('resident-name').value.trim(),ward:document.getElementById('resident-ward').value.trim(),language:document.getElementById('resident-language').value,phone:document.getElementById('resident-phone').value.trim()};localStorage.setItem('civicpulse_demo_profile',JSON.stringify(p));document.getElementById('profile-status').textContent=`Demo profile saved on this device for ${p.name}. Do not use real sensitive information in this prototype.`;}
+    function loadDemoProfile(){try{const p=JSON.parse(localStorage.getItem('civicpulse_demo_profile')||'null');if(p){document.getElementById('resident-name').value=p.name||'';document.getElementById('resident-ward').value=p.ward||'';document.getElementById('resident-language').value=p.language||'Marathi';document.getElementById('resident-phone').value=p.phone||'';}}catch(e){}}
+
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toast-msg').textContent = message;
+      toast.classList.remove('translate-y-24', 'opacity-0');
+      clearTimeout(window.toastTimer);
+      window.toastTimer = setTimeout(() => {
+        toast.classList.add('translate-y-24', 'opacity-0');
+      }, 3600);
+    }
+  </script>
+</body>
+</html>
